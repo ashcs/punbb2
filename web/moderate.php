@@ -144,63 +144,20 @@ if (isset($_GET['tid']))
 		);
 
 		// Setup breadcrumbs
-		$forum_page['crumbs'] = array(
-			array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-			array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name'])))),
-			array($cur_topic['subject'], ForumFunction::forum_link($forum_url['topic'], array($tid, ForumFunction::sef_friendly($cur_topic['subject'])))),
-			$lang_misc['Delete posts']
-		);
+		$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+		$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+		$c['breadcrumbs']->addCrumb($cur_topic['subject'], ForumFunction::forum_link($forum_url['topic'], array($tid, ForumFunction::sef_friendly($cur_topic['subject']))));
+		$c['breadcrumbs']->addCrumb($lang_misc['Delete posts']);
 
 		($hook = ForumFunction::get_hook('mr_confirm_delete_posts_pre_header_load')) ? eval($hook) : null;
 
 		define('FORUM_PAGE', 'dialogue');
-		require FORUM_ROOT.'header.php';
-
-		// START SUBST - <!-- forum_main -->
-		ob_start();
-
-		($hook = ForumFunction::get_hook('mr_confirm_delete_posts_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $lang_misc['Confirm post delete'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<form class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_delete_posts_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_misc['Delete posts'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_delete_posts_pre_confirm_checkbox')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="req_confirm" value="1" checked="checked" /></span>
-						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_common['Please confirm'] ?></span> <?php echo $lang_misc['Confirm post delete'] ?>.</label>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_delete_posts_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_delete_posts_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary caution"><input type="submit" name="delete_posts_comply" value="<?php echo $lang_common['Delete'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-		$forum_id = $fid;
-
-		($hook = ForumFunction::get_hook('mr_confirm_delete_posts_end')) ? eval($hook) : null;
-
-		$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-		$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-		ob_end_clean();
-		// END SUBST - <!-- forum_main -->
-
-		require FORUM_ROOT.'footer.php';
+		
+		echo $c['templates']->render('moderate/delete-dialogue', [
+		    'lang_misc'    => $lang_misc,
+		]);
+		
+		exit;
 	}
 	else if (isset($_POST['split_posts']) || isset($_POST['split_posts_comply']))
 	{
@@ -255,69 +212,20 @@ if (isset($_GET['tid']))
 			'posts'			=> '<input type="hidden" name="posts" value="'.implode(',', $posts).'" />'
 		);
 
-		// Setup breadcrumbs
-		$forum_page['crumbs'] = array(
-			array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-			array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name'])))),
-			array($cur_topic['subject'], ForumFunction::forum_link($forum_url['topic'], array($tid, ForumFunction::sef_friendly($cur_topic['subject'])))),
-			$lang_misc['Split posts']
-		);
+		$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+		$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+		$c['breadcrumbs']->addCrumb($cur_topic['subject'], ForumFunction::forum_link($forum_url['topic'], array($tid, ForumFunction::sef_friendly($cur_topic['subject']))));
+		$c['breadcrumbs']->addCrumb($lang_misc['Split posts']);
 
 		($hook = ForumFunction::get_hook('mr_confirm_split_posts_pre_header_load')) ? eval($hook) : null;
 
 		define('FORUM_PAGE', 'dialogue');
-		require FORUM_ROOT.'header.php';
-
-		// START SUBST - <!-- forum_main -->
-		ob_start();
-
-		($hook = ForumFunction::get_hook('mr_confirm_split_posts_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $lang_misc['Confirm post split'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<form class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_split_posts_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_misc['Split posts'] ?></strong></legend>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-<?php ($hook = ForumFunction::get_hook('mr_confirm_split_posts_pre_subject')) ? eval($hook) : null; ?>
-					<div class="sf-box text required">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_misc['New subject'] ?></span></label><br />
-						<span class="fld-input"><input type="text" id="fld<?php echo $forum_page['fld_count'] ?>" name="new_subject" size="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" required /></span>
-					</div>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_split_posts_pre_confirm_checkbox')) ? eval($hook) : null; ?>
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="req_confirm" value="1" checked="checked" /></span>
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_common['Please confirm'] ?></span> <?php echo $lang_misc['Confirm topic split'] ?>.</label>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_split_posts_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mr_confirm_split_posts_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="split_posts_comply" value="<?php echo $lang_common['Split'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-		$forum_id = $fid;
-
-		($hook = ForumFunction::get_hook('mr_confirm_split_posts_end')) ? eval($hook) : null;
-
-		$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-		$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-		ob_end_clean();
-		// END SUBST - <!-- forum_main -->
-
-		require FORUM_ROOT.'footer.php';
+		
+		echo $c['templates']->render('moderate/split-dialogue', [
+		    'lang_misc'    => $lang_misc,
+		]);
+		
+		exit;
 	}
 
 
@@ -476,99 +384,28 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 	);
 
 	// Setup breadcrumbs
-	$forum_page['crumbs'][] = array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
-	$forum_page['crumbs'][] = array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
 	if ($action == 'single')
-		$forum_page['crumbs'][] = array($subject, ForumFunction::forum_link($forum_url['topic'], array($topics, ForumFunction::sef_friendly($subject))));
-	else
-		$forum_page['crumbs'][] = array($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid));
-	$forum_page['crumbs'][] = ($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics'];
-
+        $c['breadcrumbs']->addCrumb($subject, ForumFunction::forum_link($forum_url['topic'], array($topics, ForumFunction::sef_friendly($subject))));
+    else
+        $c['breadcrumbs']->addCrumb($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid));
+    $c['breadcrumbs']->addCrumb(($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics']);
+	
 	//Setup main heading
-	$forum_page['main_title'] = end($forum_page['crumbs']).' '.$lang_misc['To new forum'];
+    $forum_page['main_title'] = (($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics']) .' '.$lang_misc['To new forum'];
 
 	($hook = ForumFunction::get_hook('mr_move_topics_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'dialogue');
-	require FORUM_ROOT.'header.php';
-
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mr_move_topics_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo end($forum_page['crumbs']).' '.$lang_misc['To new forum'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<form class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mr_move_topics_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_misc['Move topic'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mr_move_topics_pre_move_to_forum')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box select">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_misc['Move to'] ?></span></label><br />
-						<span class="fld-input"><select id="fld<?php echo $forum_page['fld_count'] ?>" name="move_to_forum">
-<?php
-
-	$forum_page['cur_category'] = 0;
-	foreach ($forum_list as $cur_forum)
-	{
-		($hook = ForumFunction::get_hook('mr_move_topics_forum_loop_start')) ? eval($hook) : null;
-		
-		if ($cur_forum['cid'] != $forum_page['cur_category'])	// A new category since last iteration?
-		{
-			if ($forum_page['cur_category'])
-				echo "\t\t\t\t".'</optgroup>'."\n";
-
-			echo "\t\t\t\t".'<optgroup label="'.ForumFunction::forum_htmlencode($cur_forum['cat_name']).'">'."\n";
-			$forum_page['cur_category'] = $cur_forum['cid'];
-		}
-
-		if ($cur_forum['fid'] != $fid)
-			echo "\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.ForumFunction::forum_htmlencode($cur_forum['forum_name']).'</option>'."\n";
-			
-		($hook = ForumFunction::get_hook('mr_move_topics_forum_loop_end')) ? eval($hook) : null;
-	}
-
-?>
-						</optgroup>
-						</select></span>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_move_topics_pre_redirect_checkbox')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo (++$forum_page['fld_count']) ?>" name="with_redirect" value="1"<?php if ($action == 'single') echo ' checked="checked"' ?> /></span>
-						<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo ($action == 'single') ? $lang_misc['Leave redirect'] : $lang_misc['Leave redirects'] ?></label>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_move_topics_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mr_move_topics_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="move_topics_to" value="<?php echo $lang_misc['Move'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-	$forum_id = $fid;
-
-	($hook = ForumFunction::get_hook('mr_move_topics_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	
+	echo $c['templates']->render('moderate/move-dialogue', [
+	    'lang_misc'    => $lang_misc,
+	    'forum_list'   => $forum_list,
+	    'action'       => $action,
+	]);
+	
+	exit;
 }
 
 
@@ -612,63 +449,20 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 	);
 
 	// Setup breadcrumbs
-	$forum_page['crumbs'] = array(
-		array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-		array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name'])))),
-		array($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid)),
-		$lang_misc['Merge topics']
-	);
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+	$c['breadcrumbs']->addCrumb($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid));
+	$c['breadcrumbs']->addCrumb($lang_misc['Merge topics']);
 
 	($hook = ForumFunction::get_hook('mr_merge_topics_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'dialogue');
-	require FORUM_ROOT.'header.php';
-
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mr_merge_topics_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $lang_misc['Confirm topic merge'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<form class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mr_merge_topics_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_misc['Merge topics'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mr_merge_topics_pre_redirect_checkbox')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo (++$forum_page['fld_count']) ?>" name="with_redirect" value="1" /></span>
-						<label for="fld<?php echo $forum_page['fld_count'] ?>"><?php echo $lang_misc['Leave merge redirects'] ?></label>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_merge_topics_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mr_merge_topics_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="merge_topics_comply" value="<?php echo $lang_misc['Merge'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-	$forum_id = $fid;
-
-	($hook = ForumFunction::get_hook('mr_merge_topics_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	
+	echo $c['templates']->render('moderate/merge-dialogue', [
+	    'lang_misc'    => $lang_misc,
+	]);
+	
+	exit;
 }
 
 
@@ -724,63 +518,21 @@ else if (isset($_REQUEST['delete_topics']) || isset($_POST['delete_topics_comply
 	);
 
 	// Setup breadcrumbs
-	$forum_page['crumbs'] = array(
-		array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-		array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name'])))),
-		array($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid)),
-		$multi ? $lang_misc['Delete topics'] : $lang_misc['Delete topic']
-	);
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+	$c['breadcrumbs']->addCrumb($lang_misc['Moderate forum'], ForumFunction::forum_link($forum_url['moderate_forum'], $fid));
+	$c['breadcrumbs']->addCrumb($multi ? $lang_misc['Delete topics'] : $lang_misc['Delete topic']);
 
 	($hook = ForumFunction::get_hook('mr_delete_topics_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'dialogue');
-	require FORUM_ROOT.'header.php';
-
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mr_delete_topics_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $lang_misc['Confirm topic delete'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<form class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mr_delete_topics_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $multi ? $lang_misc['Delete topics'] : $lang_misc['Delete topics'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mr_delete_topics_pre_confirm_checkbox')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box checkbox">
-						<span class="fld-input"><input type="checkbox" id="fld<?php echo ++$forum_page['fld_count'] ?>" name="req_confirm" value="1" checked="checked" /></span>
-						<label for="fld<?php echo $forum_page['fld_count'] ?>"><span><?php echo $lang_common['Please confirm'] ?></span> <?php echo $multi ? $lang_misc['Delete topics comply'] : $lang_misc['Delete topic comply'] ?></label>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mr_delete_topics_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mr_delete_topics_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary caution"><input type="submit" name="delete_topics_comply" value="<?php echo $lang_common['Delete'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-	$forum_id = $fid;
-
-	($hook = ForumFunction::get_hook('mr_delete_topics_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	
+	echo $c['templates']->render('moderate/delete-topic-dialogue', [
+	    'lang_misc'    => $lang_misc,
+	    'multi'        => $multi,
+	]);
+	
+	exit;
 }
 
 
@@ -826,7 +578,7 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 			ForumFunction::csrf_confirm_form();
 
 		// Get the topic subject
-		if (!($subject = $c['ModerateGateway']->getTopicSubject($topics, $fid)))
+		if (!($subject = $c['ModerateGateway']->getTopicSubject($topic_id, $fid)))
 		{
 			ForumFunction::message($lang_common['Bad request']);
 		}
@@ -864,7 +616,7 @@ else if (isset($_GET['stick']))
 		ForumFunction::message($lang_common['Bad request']);
 	}
 	
-	$c['ModerateGateway']->setTopicStick($stick, 1, $fid);
+	$c['ModerateGateway']->setTopicSticky($stick, 1, $fid);
 
 	$forum_flash->add_info($lang_misc['Stick topic redirect']);
 
@@ -894,7 +646,7 @@ else if (isset($_GET['unstick']))
 		ForumFunction::message($lang_common['Bad request']);
 	}
 
-	$c['ModerateGateway']->setTopicStick($unstick, 0, $fid);
+	$c['ModerateGateway']->setTopicSticky($unstick, 0, $fid);
 	
 	$forum_flash->add_info($lang_misc['Unstick topic redirect']);
 
@@ -947,11 +699,9 @@ $forum_page['fld_count'] = 0;
 $forum_page['form_action'] = ForumFunction::forum_link($forum_url['moderate_forum'], $fid);
 
 // Setup breadcrumbs
-$forum_page['crumbs'] = array(
-	array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-	array($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name'])))),
-	sprintf($lang_misc['Moderate forum head'], ForumFunction::forum_htmlencode($cur_forum['forum_name']))
-);
+$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+$c['breadcrumbs']->addCrumb($cur_forum['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($fid, ForumFunction::sef_friendly($cur_forum['forum_name']))));
+$c['breadcrumbs']->addCrumb(sprintf($lang_misc['Moderate forum head'], ForumFunction::forum_htmlencode($cur_forum['forum_name'])));
 
 // Setup main heading
 if ($forum_page['num_pages'] > 1)
@@ -962,214 +712,15 @@ $forum_page['main_foot_options']['select_all'] = '<span '.(empty($forum_page['ma
 
 ($hook = ForumFunction::get_hook('mr_topic_actions_pre_header_load')) ? eval($hook) : null;
 
-define('FORUM_PAGE', 'modforum');
-require FORUM_ROOT.'header.php';
-
-// START SUBST - <!-- forum_main -->
-ob_start();
-
-$forum_page['item_header'] = array();
-$forum_page['item_header']['subject']['title'] = '<strong class="subject-title">'.$lang_forum['Topics'].'</strong>';
-
-if ($forum_config['o_topic_views'] == '1')
-	$forum_page['item_header']['info']['views'] = '<strong class="info-views">'.$lang_forum['views'].'</strong>';
-
-$forum_page['item_header']['info']['replies'] = '<strong class="info-replies">'.$lang_forum['replies'].'</strong>';
-$forum_page['item_header']['info']['lastpost'] = '<strong class="info-lastpost">'.$lang_forum['last post'].'</strong>';
-
-($hook = ForumFunction::get_hook('mr_topic_actions_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-<?php
-
-	if (!empty($forum_page['main_head_options']))
-		echo "\n\t\t".'<p class="options">'.implode(' ', $forum_page['main_head_options']).'</p>';
-
-?>
-		<h2 class="hn"><span><?php echo $forum_page['items_info'] ?></span></h2>
-	</div>
-	<form id="mr-topic-actions-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-	<div class="main-subhead">
-		<p class="item-summary<?php echo ($forum_config['o_topic_views'] == '1') ? ' forum-views' : ' forum-noview' ?>"><span><?php printf($lang_forum['Forum subtitle'], implode(' ', $forum_page['item_header']['subject']), implode(', ', $forum_page['item_header']['info'])) ?></span></p>
-	</div>
-	<div id="forum<?php echo $fid ?>" class="main-content main-forum<?php echo ($forum_config['o_topic_views'] == '1') ? ' forum-views' : ' forum-noview' ?>">
-		<div class="hidden">
-			<input type="hidden" name="csrf_token" value="<?php echo ForumFunction::generate_form_token($forum_page['form_action']) ?>" />
-		</div>
-<?php
-
-	$forum_page['item_count'] = 0;
-
-	while ($cur_topic = $forum_db->fetch_assoc($result))
-	{
-		($hook = ForumFunction::get_hook('mr_topic_actions_row_loop_start')) ? eval($hook) : null;
-
-		++$forum_page['item_count'];
-
-		// Start from scratch
-		$forum_page['item_subject'] = $forum_page['item_body'] = $forum_page['item_status'] = $forum_page['item_nav'] = $forum_page['item_title'] = $forum_page['item_title_status'] = array();
-
-		if ($forum_config['o_censoring'] == '1')
-			$cur_topic['subject'] = ForumFunction::censor_words($cur_topic['subject']);
-
-		$forum_page['item_subject']['starter'] = '<span class="item-starter">'.sprintf($lang_forum['Topic starter'], ForumFunction::forum_htmlencode($cur_topic['poster'])).'</span>';
-
-		if ($cur_topic['moved_to'] !== null)
-		{
-			$forum_page['item_status']['moved'] = 'moved';
-			$forum_page['item_title']['link'] = '<span class="item-status"><em class="moved">'.sprintf($lang_forum['Item status'], $lang_forum['Moved']).'</em></span> <a href="'.ForumFunction::forum_link($forum_url['topic'], array($cur_topic['moved_to'], ForumFunction::sef_friendly($cur_topic['subject']))).'">'.ForumFunction::forum_htmlencode($cur_topic['subject']).'</a>';
-
-			// Combine everything to produce the Topic heading
-			$forum_page['item_body']['subject']['title'] = '<h3 class="hn"><span class="item-num">'.ForumFunction::forum_number_format($forum_page['start_from'] + $forum_page['item_count']).'</span> <strong>'.$forum_page['item_title']['link'].'</strong></h3>';
-
-			($hook = ForumFunction::get_hook('mr_topic_actions_moved_row_pre_item_subject_merge')) ? eval($hook) : null;
-
-			if ($forum_config['o_topic_views'] == '1')
-				$forum_page['item_body']['info']['views'] = '<li class="info-views"><span class="label">'.$lang_forum['No views info'].'</span></li>';
-
-			$forum_page['item_body']['info']['replies'] = '<li class="info-replies"><span class="label">'.$lang_forum['No replies info'].'</span></li>';
-			$forum_page['item_body']['info']['lastpost'] = '<li class="info-lastpost"><span class="label">'.$lang_forum['No lastpost info'].'</span></li>';
-			$forum_page['item_body']['info']['select'] = '<li class="info-select"><input id="fld'.++$forum_page['fld_count'].'" type="checkbox" name="topics[]" value="'.$cur_topic['id'].'" /> <label for="fld'.$forum_page['fld_count'].'">'.sprintf($lang_forum['Select topic'], ForumFunction::forum_htmlencode($cur_topic['subject'])).'</label></li>';
-
-			($hook = ForumFunction::get_hook('mr_topic_actions_moved_row_pre_output')) ? eval($hook) : null;
-		}
-		else
-		{
-			$forum_page['ghost_topic'] = false;
-
-			// First assemble the Topic heading
-
-			// Should we display the dot or not? :)
-			if (!$forum_user['is_guest'] && $forum_config['o_show_dot'] == '1' && $cur_topic['has_posted'] == $forum_user['id'])
-			{
-				$forum_page['item_title']['posted'] = '<span class="posted-mark">'.$lang_forum['You posted indicator'].'</span>';
-				$forum_page['item_status']['posted'] = 'posted';
-			}
-
-			if ($cur_topic['sticky'] == '1')
-			{
-				$forum_page['item_title_status']['sticky'] = '<em class="sticky">'.$lang_forum['Sticky'].'</em>';
-				$forum_page['item_status']['sticky'] = 'sticky';
-			}
-
-			if ($cur_topic['closed'] == '1')
-			{
-				$forum_page['item_title_status']['closed'] = '<em class="closed">'.$lang_forum['Closed'].'</em>';
-				$forum_page['item_status']['closed'] = 'closed';
-			}
-
-			($hook = ForumFunction::get_hook('mr_topic_loop_normal_topic_pre_item_title_status_merge')) ? eval($hook) : null;
-
-			if (!empty($forum_page['item_title_status']))
-				$forum_page['item_title']['status'] = '<span class="item-status">'.sprintf($lang_forum['Item status'], implode(', ', $forum_page['item_title_status'])).'</span>';
-
-			$forum_page['item_title']['link'] = '<a href="'.ForumFunction::forum_link($forum_url['topic'], array($cur_topic['id'], ForumFunction::sef_friendly($cur_topic['subject']))).'">'.ForumFunction::forum_htmlencode($cur_topic['subject']).'</a>';
-
-			($hook = ForumFunction::get_hook('mr_topic_loop_normal_topic_pre_item_title_merge')) ? eval($hook) : null;
-
-			$forum_page['item_body']['subject']['title'] = '<h3 class="hn"><span class="item-num">'.ForumFunction::forum_number_format($forum_page['start_from'] + $forum_page['item_count']).'</span> '.implode(' ', $forum_page['item_title']).'</h3>';
-
-
-			if (empty($forum_page['item_status']))
-				$forum_page['item_status']['normal'] = 'normal';
-
-			$forum_page['item_pages'] = ceil(($cur_topic['num_replies'] + 1) / $forum_user['disp_posts']);
-
-			if ($forum_page['item_pages'] > 1)
-				$forum_page['item_nav']['pages'] = '<span>'.$lang_forum['Pages'].'&#160;</span>'.ForumFunction::paginate($forum_page['item_pages'], -1, $forum_url['topic'], $lang_common['Page separator'], array($cur_topic['id'], ForumFunction::sef_friendly($cur_topic['subject'])));
-
-			// Does this topic contain posts we haven't read? If so, tag it accordingly.
-			if (!$forum_user['is_guest'] && $cur_topic['last_post'] > $forum_user['last_visit'] && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post']))
-			{
-				$forum_page['item_nav']['new'] = '<em class="item-newposts"><a href="'.ForumFunction::forum_link($forum_url['topic_new_posts'], array($cur_topic['id'], ForumFunction::sef_friendly($cur_topic['subject']))).'">'.$lang_forum['New posts'].'</a></em>';
-				$forum_page['item_status']['new'] = 'new';
-			}
-
-			($hook = ForumFunction::get_hook('mr_topic_loop_normal_topic_pre_item_nav_merge')) ? eval($hook) : null;
-
-			if (!empty($forum_page['item_nav']))
-				$forum_page['item_subject']['nav'] = '<span class="item-nav">'.sprintf($lang_forum['Topic navigation'], implode('&#160;&#160;', $forum_page['item_nav'])).'</span>';
-
-			// Assemble the Topic subject
-
-			$forum_page['item_body']['info']['replies'] = '<li class="info-replies"><strong>'.ForumFunction::forum_number_format($cur_topic['num_replies']).'</strong> <span class="label">'.(($cur_topic['num_replies'] == 1) ? $lang_forum['Reply'] : $lang_forum['Replies']).'</span></li>';
-
-			if ($forum_config['o_topic_views'] == '1')
-				$forum_page['item_body']['info']['views'] = '<li class="info-views"><strong>'.ForumFunction::forum_number_format($cur_topic['num_views']).'</strong> <span class="label">'.(($cur_topic['num_views'] == 1) ? $lang_forum['View'] : $lang_forum['Views']).'</span></li>';
-
-			$forum_page['item_body']['info']['lastpost'] = '<li class="info-lastpost"><span class="label">'.$lang_forum['Last post'].'</span> <strong><a href="'.ForumFunction::forum_link($forum_url['post'], $cur_topic['last_post_id']).'">'.ForumFunction::format_time($cur_topic['last_post']).'</a></strong> <cite>'.sprintf($lang_forum['by poster'], ForumFunction::forum_htmlencode($cur_topic['last_poster'])).'</cite></li>';
-			$forum_page['item_body']['info']['select'] = '<li class="info-select"><input id="fld'.++$forum_page['fld_count'].'" type="checkbox" name="topics[]" value="'.$cur_topic['id'].'" /> <label for="fld'.$forum_page['fld_count'].'">'.sprintf($lang_forum['Select topic'], ForumFunction::forum_htmlencode($cur_topic['subject'])).'</label></li>';
-
-			($hook = ForumFunction::get_hook('mr_topic_actions_normal_row_pre_output')) ? eval($hook) : null;
-		}
-
-		$forum_page['item_body']['subject']['desc'] = '<p>'.implode(' ', $forum_page['item_subject']).'</p>';
-
-		($hook = ForumFunction::get_hook('mr_topic_actions_row_pre_item_status_merge')) ? eval($hook) : null;
-
-		$forum_page['item_style'] = (($forum_page['item_count'] % 2 != 0) ? ' odd' : ' even').(($forum_page['item_count'] == 1) ? ' main-first-item' : '').((!empty($forum_page['item_status'])) ? ' '.implode(' ', $forum_page['item_status']) : '');
-
-		($hook = ForumFunction::get_hook('mr_topic_actions_row_pre_display')) ? eval($hook) : null;
-
-?>
-			<div id="topic<?php echo $cur_topic['id'] ?>" class="main-item<?php echo $forum_page['item_style'] ?>">
-				<span class="icon <?php echo implode(' ', $forum_page['item_status']) ?>"><!-- --></span>
-				<div class="item-subject">
-					<?php echo implode("\n\t\t\t\t\t", $forum_page['item_body']['subject'])."\n" ?>
-				</div>
-				<ul class="item-info">
-					<?php echo implode("\n\t\t\t\t\t", $forum_page['item_body']['info'])."\n" ?>
-				</ul>
-			</div>
-<?php
-
-	}
-
-?>
-	</div>
-<?php
-
-	($hook = ForumFunction::get_hook('mr_topic_actions_post_topic_list')) ? eval($hook) : null;
-
-	// Setup moderator control buttons
-	$forum_page['mod_options'] = array(
-		'mod_move'		=> '<span class="submit first-item"><input type="submit" name="move_topics" value="'.$lang_misc['Move'].'" /></span>',
-		'mod_delete'	=> '<span class="submit"><input type="submit" name="delete_topics" value="'.$lang_common['Delete'].'" /></span>',
-		'mod_merge'		=> '<span class="submit"><input type="submit" name="merge_topics" value="'.$lang_misc['Merge'].'" /></span>',
-		'mod_open'		=> '<span class="submit"><input type="submit" name="open" value="'.$lang_misc['Open'].'" /></span>',
-		'mod_close'		=> '<span class="submit"><input type="submit" name="close" value="'.$lang_misc['Close'].'" /></span>'
-	);
-
-	($hook = ForumFunction::get_hook('mr_topic_actions_pre_mod_option_output')) ? eval($hook) : null;
-
-?>
-	<div class="main-options mod-options gen-content">
-		<p class="options"><?php echo implode(' ', $forum_page['mod_options']) ?></p>
-	</div>
-	</form>
-	<div class="main-foot">
-<?php
-
-	if (!empty($forum_page['main_foot_options']))
-		echo "\n\t\t".'<p class="options">'.implode(' ', $forum_page['main_foot_options']).'</p>';
-
-?>
-		<h2 class="hn"><span><?php echo $forum_page['items_info'] ?></span></h2>
-	</div>
-
-<?php
-
-$forum_id = $fid;
-
-// Init JS helper for select-all
 $forum_loader->add_js('PUNBB.common.addDOMReadyEvent(PUNBB.common.initToggleCheckboxes);', array('type' => 'inline'));
 
-($hook = ForumFunction::get_hook('mr_end')) ? eval($hook) : null;
+define('FORUM_PAGE', 'modforum');
 
-$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-ob_end_clean();
-// END SUBST - <!-- forum_main -->
+echo $c['templates']->render('moderate/modforum', [
+    'lang_misc'    => $lang_misc,
+    'lang_forum'    => $lang_forum,
+    'topics'        => $topics,
+]);
 
-require FORUM_ROOT.'footer.php';
+exit;
+
