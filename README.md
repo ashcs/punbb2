@@ -1,4 +1,4 @@
-Clonning repo:
+Cloning repo:
 ```bash
 git clone https://github.com/ashcs/punbb2.git
 ```
