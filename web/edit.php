@@ -4,14 +4,14 @@
  *
  * Modifies the contents of the specified post.
  *
- * @copyright (C) 2008-2012 PunBB, partially based on code (C) 2008-2009 FluxBB.org
+ * @copyright (C) 2008-2018 PunBB, partially based on code (C) 2008-2009 FluxBB.org
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package PunBB
  */
 
+use Punbb\ForumFunction;
 
-if (!defined('FORUM_ROOT'))
-	define('FORUM_ROOT', './');
+defined('FORUM_ROOT') or define('FORUM_ROOT', './');
 require FORUM_ROOT.'include/common.php';
 
 ($hook = ForumFunction::get_hook('ed_start')) ? eval($hook) : null;
@@ -22,38 +22,12 @@ if ($forum_user['g_read_board'] == '0')
 // Load the post.php language file
 require FORUM_ROOT.'lang/'.$forum_user['language'].'/post.php';
 
-
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($id < 1)
 	ForumFunction::message($lang_common['Bad request']);
 
-
 // Fetch some info about the post, the topic and the forum
-$query = array(
-	'SELECT'	=> 'f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies',
-	'FROM'		=> 'posts AS p',
-	'JOINS'		=> array(
-		array(
-			'INNER JOIN'	=> 'topics AS t',
-			'ON'			=> 't.id=p.topic_id'
-		),
-		array(
-			'INNER JOIN'	=> 'forums AS f',
-			'ON'			=> 'f.id=t.forum_id'
-		),
-		array(
-			'LEFT JOIN'		=> 'forum_perms AS fp',
-			'ON'			=> '(fp.forum_id=f.id AND fp.group_id='.$forum_user['g_id'].')'
-		)
-	),
-	'WHERE'		=> '(fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id
-);
-
-($hook = ForumFunction::get_hook('ed_qr_get_post_info')) ? eval($hook) : null;
-$result = $forum_db->query_build($query) or ForumFunction::error(__FILE__, __LINE__);
-$cur_post = $forum_db->fetch_assoc($result);
-
-if (!$cur_post)
+if (!($cur_post = $c['EditGateway']->getPostInfo($id, $forum_user)))
 	ForumFunction::message($lang_common['Bad request']);
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -130,15 +104,7 @@ if (isset($_POST['form_sent']))
 		if ($can_edit_subject)
 		{
 			// Update the topic and any redirect topics
-			$query = array(
-				'UPDATE'	=> 'topics',
-				'SET'		=> 'subject=\''.$forum_db->escape($subject).'\'',
-				'WHERE'		=> 'id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']
-			);
-
-			($hook = ForumFunction::get_hook('ed_qr_update_subject')) ? eval($hook) : null;
-			$forum_db->query_build($query) or ForumFunction::error(__FILE__, __LINE__);
-
+			$c['EditGateway']->setTopicSubject($subject, $cur_post);
 			// We changed the subject, so we need to take that into account when we update the search words
 			update_search_index('edit', $id, $message, $subject);
 		}
@@ -146,17 +112,7 @@ if (isset($_POST['form_sent']))
 			update_search_index('edit', $id, $message);
 
 		// Update the post
-		$query = array(
-			'UPDATE'	=> 'posts',
-			'SET'		=> 'message=\''.$forum_db->escape($message).'\', hide_smilies=\''.$hide_smilies.'\'',
-			'WHERE'		=> 'id='.$id
-		);
-
-		if (!isset($_POST['silent']) || !$forum_page['is_admmod'])
-			$query['SET'] .= ', edited='.time().', edited_by=\''.$forum_db->escape($forum_user['username']).'\'';
-
-		($hook = ForumFunction::get_hook('ed_qr_update_post')) ? eval($hook) : null;
-		$forum_db->query_build($query) or ForumFunction::error(__FILE__, __LINE__);
+		$c['EditGateway']->setPostMessage($id, $message, $hide_smilies, $forum_user, !(!isset($_POST['silent']) || !$forum_page['is_admmod']) );
 
 		($hook = ForumFunction::get_hook('ed_pre_redirect')) ? eval($hook) : null;
 
@@ -204,167 +160,12 @@ $forum_page['crumbs'] = array(
 ($hook = ForumFunction::get_hook('ed_pre_header_load')) ? eval($hook) : null;
 
 define('FORUM_PAGE', 'postedit');
-require FORUM_ROOT.'header.php';
 
-// START SUBST - <!-- forum_main -->
-ob_start();
+echo $c['templates']->render('postedit', [
+    'lang_post'    => $lang_post,
+    'cur_post'      => $cur_post,
+    'id'            => $id,
+    'can_edit_subject'  => $can_edit_subject 
+]);
 
-($hook = ForumFunction::get_hook('ed_main_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo ($id == $cur_post['first_post_id']) ? $lang_post['Edit topic'] : $lang_post['Edit reply'] ?></span></h2>
-	</div>
-<?php
-
-// If preview selected and there are no errors
-if (isset($_POST['preview']) && empty($forum_page['errors']))
-{
-	if (!defined('FORUM_PARSER_LOADED'))
-		require FORUM_ROOT.'include/parser.php';
-
-	// Generate the post heading
-	$forum_page['post_ident'] = array();
-	$forum_page['post_ident']['num'] = '<span class="post-num">#</span>';
-	$forum_page['post_ident']['byline'] = '<span class="post-byline">'.sprintf((($id == $cur_post['first_post_id']) ? $lang_post['Topic byline'] : $lang_post['Reply byline']), '<strong>'.ForumFunction::forum_htmlencode($cur_post['poster']).'</strong>').'</span>';
-	$forum_page['post_ident']['link'] = '<span class="post-link">'.ForumFunction::format_time(time()).'</span>';
-
-	$forum_page['preview_message'] = parse_message($message, $hide_smilies);
-
-	($hook = ForumFunction::get_hook('ed_preview_pre_display')) ? eval($hook) : null;
-
-?>
-	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo $id == $cur_post['first_post_id'] ? $lang_post['Preview edited topic'] : $lang_post['Preview edited reply'] ?></span></h2>
-	</div>
-	<div id="post-preview" class="main-content main-frm">
-		<div class="post singlepost">
-			<div class="posthead">
-				<h3 class="hn"><?php echo implode(' ', $forum_page['post_ident']) ?></h3>
-<?php ($hook = ForumFunction::get_hook('ed_preview_new_post_head_option')) ? eval($hook) : null; ?>
-			</div>
-			<div class="postbody">
-				<div class="post-entry">
-					<div class="entry-content">
-						<?php echo $forum_page['preview_message']."\n" ?>
-					</div>
-<?php ($hook = ForumFunction::get_hook('ed_preview_new_post_entry_data')) ? eval($hook) : null; ?>
-				</div>
-			</div>
-		</div>
-	</div>
-<?php
-
-}
-
-?>
-	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Compose edited reply'] : $lang_post['Compose edited topic'] ?></span></h2>
-	</div>
-	<div id="post-form" class="main-content main-frm">
-<?php
-
-	if (!empty($forum_page['text_options']))
-		echo "\t\t".'<p class="ct-options options">'.sprintf($lang_common['You may use'], implode(' ', $forum_page['text_options'])).'</p>'."\n";
-
-// If there were any errors, show them
-if (isset($forum_page['errors']))
-{
-
-?>
-		<div class="ct-box error-box">
-			<h2 class="warn hn"><span><?php echo $lang_post['Post errors'] ?></span></h2>
-			<ul class="error-list">
-				<?php echo implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
-			</ul>
-		</div>
-<?php
-
-}
-
-?>
-		<div id="req-msg" class="req-warn ct-box error-box">
-			<p class="important"><?php echo $lang_common['Required warn'] ?></p>
-		</div>
-		<form id="afocus" class="frm-form frm-ctrl-submit" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>"<?php if (!empty($forum_page['form_attributes'])) echo ' '.implode(' ', $forum_page['form_attributes']) ?>>
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('ed_pre_main_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_post['Edit post legend'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('ed_pre_subject')) ? eval($hook) : null; ?>
-<?php if ($can_edit_subject): ?>				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box text required">
-						<label for="fld<?php echo ++ $forum_page['fld_count'] ?>"><span><?php echo $lang_post['Topic subject'] ?></span></label><br />
-						<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="req_subject" size="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" value="<?php echo ForumFunction::forum_htmlencode(isset($_POST['req_subject']) ? $_POST['req_subject'] : $cur_post['subject']) ?>" required /></span>
-					</div>
-				</div>
-<?php endif; ($hook = ForumFunction::get_hook('ed_pre_message_box')) ? eval($hook) : null; ?>				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="txt-box textarea required">
-						<label for="fld<?php echo ++ $forum_page['fld_count'] ?>"><span><?php echo $lang_post['Write message'] ?></span></label>
-						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="req_message" rows="15" cols="95" required spellcheck="true"><?php echo ForumFunction::forum_htmlencode(isset($_POST['req_message']) ? $message : $cur_post['message']) ?></textarea></span></div>
-					</div>
-				</div>
-<?php
-
-$forum_page['checkboxes'] = array();
-if ($forum_config['o_smilies'] == '1')
-{
-	if (isset($_POST['hide_smilies']) || $cur_post['hide_smilies'] == '1')
-		$forum_page['checkboxes']['hide_smilies'] = '<div class="mf-item"><span class="fld-input"><input type="checkbox" id="fld'.(++$forum_page['fld_count']).'" name="hide_smilies" value="1" checked="checked" /></span> <label for="fld'.$forum_page['fld_count'].'">'.$lang_post['Hide smilies'].'</label></div>';
-	else
-		$forum_page['checkboxes']['hide_smilies'] = '<div class="mf-item"><span class="fld-input"><input type="checkbox" id="fld'.(++$forum_page['fld_count']).'" name="hide_smilies" value="1" /></span> <label for="fld'.$forum_page['fld_count'].'">'.$lang_post['Hide smilies'].'</label></div>';
-}
-
-if ($forum_page['is_admmod'])
-{
-	if ((isset($_POST['form_sent']) && isset($_POST['silent'])) || !isset($_POST['form_sent']))
-		$forum_page['checkboxes']['silent'] = '<div class="mf-item"><span class="fld-input"><input type="checkbox" id="fld'.(++$forum_page['fld_count']).'" name="silent" value="1" checked="checked" /></span> <label for="fld'.$forum_page['fld_count'].'">'.$lang_post['Silent edit'].'</label></div>';
-	else
-		$forum_page['checkboxes']['silent'] = '<div class="mf-item"><span class="fld-input"><input type="checkbox" id="fld'.(++$forum_page['fld_count']).'" name="silent" value="1" /></span> <label for="fld'.$forum_page['fld_count'].'">'.$lang_post['Silent edit'].'</label></div>';
-}
-
-($hook = ForumFunction::get_hook('ed_pre_checkbox_display')) ? eval($hook) : null;
-
-if (!empty($forum_page['checkboxes']))
-{
-
-?>
-				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="mf-box checkbox">
-						<?php echo implode("\n\t\t\t\t\t", $forum_page['checkboxes'])."\n" ?>
-					</div>
-<?php ($hook = ForumFunction::get_hook('ed_pre_checkbox_fieldset_end')) ? eval($hook) : null; ?>
-				</fieldset>
-<?php
-
-}
-
-($hook = ForumFunction::get_hook('ed_pre_main_fieldset_end')) ? eval($hook) : null;
-
-?>
-			</fieldset>
-<?php
-
-($hook = ForumFunction::get_hook('ed_main_fieldset_end')) ? eval($hook) : null;
-
-?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="submit_button" value="<?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Submit reply'] : $lang_post['Submit topic'] ?>" /></span>
-				<span class="submit"><input type="submit" name="preview" value="<?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Preview reply'] : $lang_post['Preview topic'] ?>" /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-$forum_id = $cur_post['fid'];
-
-($hook = ForumFunction::get_hook('ed_end')) ? eval($hook) : null;
-
-$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-ob_end_clean();
-// END SUBST - <!-- forum_main -->
-
-require FORUM_ROOT.'footer.php';
+exit;

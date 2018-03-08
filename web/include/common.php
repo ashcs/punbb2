@@ -121,7 +121,9 @@ $gateways = [
     'PostGateway',
     'ProfileGateway',
     'SearchGateway',
-    'ModerateGateway'
+    'ModerateGateway',
+    'DeleteGateway',
+    'EditGateway'
 ];
 
 foreach ($gateways as $cur_gateway) {
