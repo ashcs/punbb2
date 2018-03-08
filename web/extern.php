@@ -55,6 +55,7 @@
 				last_post - sort topics by last post
 
 /***********************************************************************/
+use Punbb\ForumFunction;
 
 define('FORUM_QUIET_VISIT', 1);
 
@@ -74,7 +75,7 @@ if ($forum_user['is_guest'] && isset($_SERVER['PHP_AUTH_USER']))
 
 if ($forum_user['g_read_board'] == '0')
 {
-	http_ForumFunction::authenticate_user();
+	ForumFunction::authenticate_user();
 	exit($lang_common['No view']);
 }
 
@@ -312,7 +313,7 @@ if ($action == 'feed')
 		$cur_topic = $forum_db->fetch_assoc($result);
 		if (!$cur_topic)
 		{
-			http_ForumFunction::authenticate_user();
+			ForumFunction::authenticate_user();
 			exit($lang_common['Bad request']);
 		}
 
