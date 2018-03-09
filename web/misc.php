@@ -19,7 +19,6 @@ require FORUM_ROOT.'include/common.php';
 // Load the misc.php language file
 require FORUM_ROOT.'lang/'.$forum_user['language'].'/misc.php';
 
-
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 $errors = array();
 
@@ -29,44 +28,19 @@ if ($action == 'rules')
 	if ($forum_config['o_rules'] == '0' || ($forum_user['is_guest'] && $forum_user['g_read_board'] == '0' && $forum_config['o_regs_allow'] == '0'))
 		ForumFunction::message($lang_common['Bad request']);
 
-	// Setup breadcrumbs
-	$forum_page['crumbs'] = array(
-		array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-		$lang_common['Rules']
-	);
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb($lang_common['Rules']);
 
 	($hook = ForumFunction::get_hook('mi_rules_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'rules');
-	require FORUM_ROOT.'header.php';
-
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mi_rules_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $lang_common['Rules'] ?></span></h2>
-	</div>
-
-	<div class="main-content main-frm">
-		<div id="rules-content" class="ct-box user-box">
-			<?php echo $forum_config['o_rules_message']."\n" ?>
-		</div>
-	</div>
-<?php
-
-	($hook = ForumFunction::get_hook('mi_rules_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	
+	echo $c['templates']->render('misc/rules', [
+	    'lang_misc'    => $lang_misc,
+	]);
+	
+	exit;
 }
-
 
 // Mark all topics/posts as read?
 else if ($action == 'markread')
@@ -93,7 +67,6 @@ else if ($action == 'markread')
 	ForumFunction::redirect(ForumFunction::forum_link($forum_url['index']), $lang_misc['Mark read redirect']);
 }
 
-
 // Mark the topics/posts in a forum as read?
 else if ($action == 'markforumread')
 {
@@ -113,9 +86,7 @@ else if ($action == 'markforumread')
 
 	// Fetch some info about the forum
 	if (!($forum_name = $c['MiscGateway']->getForumName($fid, $forum_user)))
-	{
 		ForumFunction::message($lang_common['Bad request']);
-	}
 
 	$tracked_topics = ForumFunction::get_tracked_topics();
 	$tracked_topics['forums'][$fid] = time();
@@ -159,7 +130,6 @@ else if ($action == 'opensearch')
 	exit;
 }
 
-
 // Send form e-mail?
 else if (isset($_GET['email']))
 {
@@ -178,9 +148,7 @@ else if (isset($_GET['email']))
 		ForumFunction::redirect(ForumFunction::forum_htmlencode($_POST['redirect_url']), $lang_common['Cancel redirect']);
 
 	if (!($recipient_info = $c['MiscGateway']->getRecipientInfo($recipient_id)))
-	{
 		ForumFunction::message($lang_common['Bad request']);
-	}
 
 	if ($recipient_info['email_setting'] == 2 && !$forum_user['is_admmod'])
 		ForumFunction::message($lang_misc['Form e-mail disabled']);
@@ -261,95 +229,19 @@ else if (isset($_GET['email']))
 	$forum_page['main_head'] = sprintf($lang_misc['Send forum e-mail'], ForumFunction::forum_htmlencode($recipient_info['username']));
 
 	// Setup breadcrumbs
-	$forum_page['crumbs'] = array(
-		array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-		sprintf($lang_misc['Send forum e-mail'], ForumFunction::forum_htmlencode($recipient_info['username']))
-	);
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb(sprintf($lang_misc['Send forum e-mail'], ForumFunction::forum_htmlencode($recipient_info['username'])));
 
 	($hook = ForumFunction::get_hook('mi_email_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'formemail');
-	require FORUM_ROOT.'header.php';
 
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mi_email_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $forum_page['main_head'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<div class="ct-box warn-box">
-			<p class="important"><?php echo $lang_misc['E-mail disclosure note'] ?></p>
-		</div>
-<?php
-
-	// If there were any errors, show them
-	if (!empty($errors))
-	{
-		$forum_page['errors'] = array();
-		foreach ($errors as $cur_error)
-			$forum_page['errors'][] = '<li class="warn"><span>'.$cur_error.'</span></li>';
-
-		($hook = ForumFunction::get_hook('mi_pre_email_errors')) ? eval($hook) : null;
-
-?>
-		<div class="ct-box error-box">
-			<h2 class="warn hn"><?php echo $lang_misc['Form e-mail errors'] ?></h2>
-			<ul class="error-list">
-				<?php echo implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
-			</ul>
-		</div>
-<?php
-
-	}
-
-?>
-		<div id="req-msg" class="req-warn ct-box error-box">
-			<p class="important"><?php echo $lang_common['Required warn'] ?></p>
-		</div>
-		<form id="afocus" class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mi_email_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_misc['Write e-mail'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mi_email_pre_subject')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="sf-box text required longtext">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_misc['E-mail subject'] ?></span></label><br />
-						<span class="fld-input"><input type="text" id="fld<?php echo $forum_page['fld_count'] ?>" name="req_subject" value="<?php echo(isset($_POST['req_subject']) ? ForumFunction::forum_htmlencode($_POST['req_subject']) : '') ?>" size="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" required /></span>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mi_email_pre_message_contents')) ? eval($hook) : null; ?>
-				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="txt-box textarea required">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_misc['E-mail message'] ?></span></label>
-						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="req_message" rows="10" cols="95" required><?php echo(isset($_POST['req_message']) ? ForumFunction::forum_htmlencode($_POST['req_message']) : '') ?></textarea></span></div>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mi_email_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mi_email_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-	($hook = ForumFunction::get_hook('mi_email_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	echo $c['templates']->render('misc/email', [
+	    'lang_misc'    => $lang_misc,
+	    'errors'       => $errors,
+	]);
+	
+	exit;
 }
 
 
@@ -395,17 +287,13 @@ else if (isset($_GET['report']))
 		if (empty($errors)) {
 			// Get some info about the topic we're reporting
 			if (!($topic_info = $c['MiscGateway']->getReportedTopicInfo($post_id)))
-			{
 				ForumFunction::message($lang_common['Bad request']);
-			}
 
 			($hook = ForumFunction::get_hook('mi_report_pre_reports_sent')) ? eval($hook) : null;
 
 			// Should we use the internal report handling?
 			if ($forum_config['o_report_method'] == 0 || $forum_config['o_report_method'] == 2)
-			{
 				$c['MiscGateway']->insertReport($post_id, $topic_info, $forum_user, $reason);
-			}
 
 			// Should we e-mail the report?
 			if ($forum_config['o_report_method'] == 1 || $forum_config['o_report_method'] == 2)
@@ -446,84 +334,22 @@ else if (isset($_GET['report']))
 	);
 
 	// Setup breadcrumbs
-	$forum_page['crumbs'] = array(
-		array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-		$lang_misc['Report post']
-	);
-
+	$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+	$c['breadcrumbs']->addCrumb($lang_misc['Report post']);
+	
 	// Setup main heading
-	$forum_page['main_head'] = end($forum_page['crumbs']);
+	$forum_page['main_head'] = $lang_misc['Report post'];
 
 	($hook = ForumFunction::get_hook('mi_report_pre_header_load')) ? eval($hook) : null;
 
 	define('FORUM_PAGE', 'report');
-	require FORUM_ROOT.'header.php';
-
-	// START SUBST - <!-- forum_main -->
-	ob_start();
-
-	($hook = ForumFunction::get_hook('mi_report_output_start')) ? eval($hook) : null;
-
-?>
-	<div class="main-head">
-		<h2 class="hn"><span><?php echo $forum_page['main_head'] ?></span></h2>
-	</div>
-	<div class="main-content main-frm">
-		<div id="req-msg" class="req-warn ct-box error-box">
-			<p class="important"><?php echo $lang_common['Required warn'] ?></p>
-		</div>
-<?php
-		// If there were any errors, show them
-		if (!empty($errors)) {
-			$forum_page['errors'] = array();
-			foreach ($errors as $cur_error) {
-				$forum_page['errors'][] = '<li class="warn"><span>'.$cur_error.'</span></li>';
-			}
-
-			($hook = ForumFunction::get_hook('mi_pre_report_errors')) ? eval($hook) : null;
-?>
-		<div class="ct-box error-box">
-			<h2 class="warn hn"><?php echo $lang_misc['Report errors'] ?></h2>
-			<ul class="error-list">
-				<?php echo implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
-			</ul>
-		</div>
-<?php
-		}
-?>
-		<form id="afocus" class="frm-form" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>">
-			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
-			</div>
-<?php ($hook = ForumFunction::get_hook('mi_report_pre_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_common['Required information'] ?></strong></legend>
-<?php ($hook = ForumFunction::get_hook('mi_report_pre_reason')) ? eval($hook) : null; ?>
-				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
-					<div class="txt-box textarea required">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_misc['Reason'] ?></span> <small><?php echo $lang_misc['Reason help'] ?></small></label><br />
-						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="req_reason" rows="5" cols="60" required></textarea></span></div>
-					</div>
-				</div>
-<?php ($hook = ForumFunction::get_hook('mi_report_pre_fieldset_end')) ? eval($hook) : null; ?>
-			</fieldset>
-<?php ($hook = ForumFunction::get_hook('mi_report_fieldset_end')) ? eval($hook) : null; ?>
-			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" /></span>
-				<span class="cancel"><input type="submit" name="cancel" value="<?php echo $lang_common['Cancel'] ?>" formnovalidate /></span>
-			</div>
-		</form>
-	</div>
-<?php
-
-	($hook = ForumFunction::get_hook('mi_report_end')) ? eval($hook) : null;
-
-	$tpl_temp = ForumFunction::forum_trim(ob_get_contents());
-	$tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
-	ob_end_clean();
-	// END SUBST - <!-- forum_main -->
-
-	require FORUM_ROOT.'footer.php';
+	
+	echo $c['templates']->render('misc/report', [
+	    'lang_misc'    => $lang_misc,
+	    'errors'       => $errors,
+	]);
+	
+	exit;
 }
 
 
