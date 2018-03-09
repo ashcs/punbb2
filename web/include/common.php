@@ -123,7 +123,8 @@ $gateways = [
     'SearchGateway',
     'ModerateGateway',
     'DeleteGateway',
-    'EditGateway'
+    'EditGateway',
+    'MiscGateway',
 ];
 
 foreach ($gateways as $cur_gateway) {

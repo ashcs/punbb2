@@ -26,10 +26,8 @@ $section = isset($_GET['section']) ? $_GET['section'] : null;
 if (!$section)
 	ForumFunction::message($lang_common['Bad request']);
 
-$forum_page['crumbs'] = array(
-	array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['help'])),
-	$lang_help['Help']
-);
+$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+$c['breadcrumbs']->addCrumb($lang_help['Help']);
 
 define('FORUM_PAGE', 'help');
 

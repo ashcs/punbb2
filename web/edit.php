@@ -148,14 +148,10 @@ if ($forum_config['p_message_img_tag'] == '1')
 if ($forum_config['o_smilies'] == '1')
 	$forum_page['text_options']['smilies'] = '<span'.(empty($forum_page['text_options']) ? ' class="first-item"' : '').'><a class="exthelp" href="'.ForumFunction::forum_link($forum_url['help'], 'smilies').'" title="'.sprintf($lang_common['Help page'], $lang_common['Smilies']).'">'.$lang_common['Smilies'].'</a></span>';
 
-
-// Setup breadcrumbs
-$forum_page['crumbs'] = array(
-	array($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index'])),
-	array($cur_post['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($cur_post['fid'], ForumFunction::sef_friendly($cur_post['forum_name'])))),
-	array($cur_post['subject'], ForumFunction::forum_link($forum_url['topic'], array($cur_post['tid'], ForumFunction::sef_friendly($cur_post['subject'])))),
-	(($id == $cur_post['first_post_id']) ? $lang_post['Edit topic'] : $lang_post['Edit reply'])
-);
+$c['breadcrumbs']->addCrumb($forum_config['o_board_title'], ForumFunction::forum_link($forum_url['index']));
+$c['breadcrumbs']->addCrumb($cur_post['forum_name'], ForumFunction::forum_link($forum_url['forum'], array($cur_post['fid'], ForumFunction::sef_friendly($cur_post['forum_name']))));
+$c['breadcrumbs']->addCrumb($cur_post['subject'], ForumFunction::forum_link($forum_url['topic'], array($cur_post['tid'], ForumFunction::sef_friendly($cur_post['subject']))));
+$c['breadcrumbs']->addCrumb((($id == $cur_post['first_post_id']) ? $lang_post['Edit topic'] : $lang_post['Edit reply']));
 
 ($hook = ForumFunction::get_hook('ed_pre_header_load')) ? eval($hook) : null;
 
