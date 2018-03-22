@@ -2,7 +2,7 @@
 
 namespace Punbb\Data;
 
-class ViewtopicGateway {
+class TopicGateway {
 	
 	private $forum_db;
 	private $topic_id;

@@ -3,7 +3,7 @@
 namespace Punbb\Data;
 
 
-class ViewforumGateway {
+class ForumGateway {
 	
 	private $forum_db;
 	

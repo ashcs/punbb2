@@ -591,9 +591,9 @@ static function generate_crumbs($reverse)
 
 
 // Generate a string with page and item information for multipage headings
-static function generate_items_info($label, $first, $total)
+static function generate_items_info($label, $first, $total, $forum_page)
 {
-	global $forum_page, $lang_common;
+	global $lang_common;
 
 	$return = ($hook = static::get_hook('fn_generate_page_info_start')) ? eval($hook) : null;
 	if ($return !== null)
@@ -1526,6 +1526,7 @@ static function check_bans()
 	global $forum_db, $forum_config, $lang_common, $forum_user;//, $forum_bans;
 
 	get_container()['forum_bans'] = Cache::load_bans();
+	//get_container()->add('forum_bans', Cache::load_bans());
 
 	$return = ($hook = static::get_hook('fn_check_bans_start')) ? eval($hook) : null;
 	if ($return !== null)
@@ -1542,8 +1543,8 @@ static function check_bans()
 
 	$bans_altered = false;
 	$is_banned = false;
-
-	foreach (get_container()['forum_bans'] as $cur_ban)
+	$forum_bans = get_container()['forum_bans'];
+	foreach ($forum_bans as $cur_ban)
 	{
 		// Has this ban expired?
 		if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time())
@@ -1604,10 +1605,11 @@ static function check_bans()
 	// If we removed any expired bans during our run-through, we need to regenerate the bans cache
 	if ($bans_altered)
 	{
-	    get_container()['forum_bans'] =  Cache::generate_bans_cache();
+	    get_container()['forum_bans'] = Cache::generate_bans_cache();
+	    //get_container()->add('forum_bans', Cache::generate_bans_cache());
 	}
 	
-	//return get_container()['forum_bans'];
+	return get_container()['forum_bans'];
 }
 
 

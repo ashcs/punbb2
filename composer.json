@@ -9,7 +9,7 @@
 		"league/plates" : "~3.3",
 		"pimple/pimple" : "~3.2",
 		"miovisman/parserus" : "~0.9",
-		"league/route" : "~3.0"
+		"zendframework/zend-diactoros" : "~1.7"
 	},
 	"autoload" : {
 		"psr-4" : {

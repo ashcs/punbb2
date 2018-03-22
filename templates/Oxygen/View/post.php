@@ -1,9 +1,12 @@
 <?php $this->layout('main') ?>
 
 	<div class="main-head">
-		<h2 class="hn"><span><?php echo $tid ? $lang_post['Post reply'] : $lang_post['Post new topic'] ?></span></h2>
+		<h2 class="hn"><span><?= $tid ? $lang_post['Post reply'] : $lang_post['Post new topic'] ?></span></h2>
 	</div>
 <?php
+
+$forum_page['group_count'] = $forum_page['item_count'] = $forum_page['fld_count'] = 0;
+$forum_page['form_attributes'] = array();
 
 // If preview selected and there are no errors
 if (isset($_POST['preview']) && empty($errors))
@@ -23,18 +26,18 @@ if (isset($_POST['preview']) && empty($errors))
 
 ?>
 	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo $tid ? $lang_post['Preview reply'] : $lang_post['Preview new topic'] ?></span></h2>
+		<h2 class="hn"><span><?= $tid ? $lang_post['Preview reply'] : $lang_post['Preview new topic'] ?></span></h2>
 	</div>
 	<div id="post-preview" class="main-content main-frm">
 		<div class="post singlepost">
 			<div class="posthead">
-				<h3 class="hn"><?php echo implode(' ', $forum_page['post_ident']) ?></h3>
+				<h3 class="hn"><?= implode(' ', $forum_page['post_ident']) ?></h3>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_preview_new_post_head_option')) ? eval($hook) : null; ?>
 			</div>
 			<div class="postbody">
 				<div class="post-entry">
 					<div class="entry-content">
-						<?php echo $forum_page['preview_message']."\n" ?>
+						<?= $forum_page['preview_message']."\n" ?>
 					</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_preview_new_post_entry_data')) ? eval($hook) : null; ?>
 				</div>
@@ -47,7 +50,7 @@ if (isset($_POST['preview']) && empty($errors))
 
 ?>
 	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo ($tid) ? $lang_post['Compose your reply'] : $lang_post['Compose your topic'] ?></span></h2>
+		<h2 class="hn"><span><?= ($tid) ? $lang_post['Compose your reply'] : $lang_post['Compose your topic'] ?></span></h2>
 	</div>
 	<div id="post-form" class="main-content main-frm">
 <?php
@@ -66,9 +69,9 @@ if (isset($_POST['preview']) && empty($errors))
 
 ?>
 		<div class="ct-box error-box">
-			<h2 class="warn hn"><?php echo $lang_post['Post errors'] ?></h2>
+			<h2 class="warn hn"><?= $lang_post['Post errors'] ?></h2>
 			<ul class="error-list">
-				<?php echo implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
+				<?= implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
 			</ul>
 		</div>
 <?php
@@ -77,11 +80,13 @@ if (isset($_POST['preview']) && empty($errors))
 
 ?>
 		<div id="req-msg" class="req-warn ct-box error-box">
-			<p class="important"><?php echo $lang_common['Required warn'] ?></p>
+			<p class="important"><?= $lang_common['Required warn'] ?></p>
 		</div>
-		<form id="afocus" class="frm-form frm-ctrl-submit" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>"<?php if (!empty($forum_page['form_attributes'])) echo ' '.implode(' ', $forum_page['form_attributes']) ?>>
+		<form id="afocus" class="frm-form frm-ctrl-submit" method="post" accept-charset="utf-8" action="<?= $forum_page['form_action'] ?>"<?php if (!empty($forum_page['form_attributes'])) echo ' '.implode(' ', $forum_page['form_attributes']) ?>>
 			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
+				<input type="hidden" name="form_sent" value="1" />
+				<input type="hidden" name="form_user" value="<?= \Punbb\ForumFunction::forum_htmlencode($forum_user['username']) ?>" />
+				<input type="hidden" name="csrf_token" value="<?= \Punbb\ForumFunction::generate_form_token($forum_page['form_action']) ?>" />
 			</div>
 <?php
 
@@ -92,20 +97,20 @@ if ($forum_user['is_guest'])
 	($hook = \Punbb\ForumFunction::get_hook('po_pre_guest_info_fieldset')) ? eval($hook) : null;
 
 ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_post['Guest post legend'] ?></strong></legend>
+			<fieldset class="frm-group group<?= ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><strong><?= $lang_post['Guest post legend'] ?></strong></legend>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_pre_guest_username')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-set set<?= ++$forum_page['item_count'] ?>">
 					<div class="sf-box text required">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_post['Guest name'] ?></span></label><br />
-						<span class="fld-input"><input type="text" id="fld<?php echo $forum_page['fld_count'] ?>" name="req_username" value="<?php if (isset($_POST['req_username'])) echo \Punbb\ForumFunction::forum_htmlencode($username); ?>" size="35" maxlength="25" /></span>
+						<label for="fld<?= ++$forum_page['fld_count'] ?>"><span><?= $lang_post['Guest name'] ?></span></label><br />
+						<span class="fld-input"><input type="text" id="fld<?= $forum_page['fld_count'] ?>" name="req_username" value="<?php if (isset($_POST['req_username'])) echo \Punbb\ForumFunction::forum_htmlencode($username); ?>" size="35" maxlength="25" /></span>
 					</div>
 				</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_pre_guest_email')) ? eval($hook) : null; ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-set set<?= ++$forum_page['item_count'] ?>">
 					<div class="sf-box text<?php if ($forum_config['p_force_guest_email'] == '1') echo ' required' ?>">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_post['Guest e-mail'] ?></span></label><br />
-						<span class="fld-input"><input type="email" id="fld<?php echo $forum_page['fld_count'] ?>" name="<?php echo $forum_page['email_form_name'] ?>" value="<?php if (isset($_POST[$forum_page['email_form_name']])) echo \Punbb\ForumFunction::forum_htmlencode($email); ?>" size="35" maxlength="80" <?php if ($forum_config['p_force_guest_email'] == '1') echo 'required' ?> /></span>
+						<label for="fld<?= ++$forum_page['fld_count'] ?>"><span><?= $lang_post['Guest e-mail'] ?></span></label><br />
+						<span class="fld-input"><input type="email" id="fld<?= $forum_page['fld_count'] ?>" name="<?= $forum_page['email_form_name'] ?>" value="<?php if (isset($_POST[$forum_page['email_form_name']])) echo \Punbb\ForumFunction::forum_htmlencode($email); ?>" size="35" maxlength="80" <?php if ($forum_config['p_force_guest_email'] == '1') echo 'required' ?> /></span>
 					</div>
 				</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_pre_guest_info_fieldset_end')) ? eval($hook) : null; ?>
@@ -121,8 +126,8 @@ if ($forum_user['is_guest'])
 ($hook = \Punbb\ForumFunction::get_hook('po_pre_req_info_fieldset')) ? eval($hook) : null;
 
 ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_common['Required information'] ?></strong></legend>
+			<fieldset class="frm-group group<?= ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><strong><?= $lang_common['Required information'] ?></strong></legend>
 <?php
 
 if ($fid)
@@ -130,10 +135,10 @@ if ($fid)
 	($hook = \Punbb\ForumFunction::get_hook('po_pre_req_subject')) ? eval($hook) : null;
 
 ?>
-				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="sf-set set<?= ++$forum_page['item_count'] ?>">
 					<div class="sf-box text required longtext">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_post['Topic subject'] ?></span></label><br />
-						<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) echo \Punbb\ForumFunction::forum_htmlencode($subject); ?>" size="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" required /></span>
+						<label for="fld<?= ++$forum_page['fld_count'] ?>"><span><?= $lang_post['Topic subject'] ?></span></label><br />
+						<span class="fld-input"><input id="fld<?= $forum_page['fld_count'] ?>" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) echo \Punbb\ForumFunction::forum_htmlencode($subject); ?>" size="<?= FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?= FORUM_SUBJECT_MAXIMUM_LENGTH ?>" required /></span>
 					</div>
 				</div>
 <?php
@@ -143,10 +148,10 @@ if ($fid)
 ($hook = \Punbb\ForumFunction::get_hook('po_pre_post_contents')) ? eval($hook) : null;
 
 ?>
-				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
+				<div class="txt-set set<?= ++$forum_page['item_count'] ?>">
 					<div class="txt-box textarea required">
-						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span><?php echo $lang_post['Write message'] ?></span></label>
-						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="req_message" rows="15" cols="95" required spellcheck="true"><?php echo isset($_POST['req_message']) ? \Punbb\ForumFunction::forum_htmlencode($message) : (isset($forum_page['quote']) ? \Punbb\ForumFunction::forum_htmlencode($forum_page['quote']) : '') ?></textarea></span></div>
+						<label for="fld<?= ++$forum_page['fld_count'] ?>"><span><?= $lang_post['Write message'] ?></span></label>
+						<div class="txt-input"><span class="fld-input"><textarea id="fld<?= $forum_page['fld_count'] ?>" name="req_message" rows="15" cols="95" required spellcheck="true"><?= isset($_POST['req_message']) ? \Punbb\ForumFunction::forum_htmlencode($message) : (isset($forum_page['quote']) ? \Punbb\ForumFunction::forum_htmlencode($forum_page['quote']) : '') ?></textarea></span></div>
 					</div>
 				</div>
 <?php
@@ -179,9 +184,9 @@ if (!empty($forum_page['checkboxes']))
 {
 
 ?>
-				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<fieldset class="mf-set set<?= ++$forum_page['item_count'] ?>">
 					<div class="mf-box checkbox">
-						<?php echo implode("\n\t\t\t\t\t", $forum_page['checkboxes'])."\n" ?>
+						<?= implode("\n\t\t\t\t\t", $forum_page['checkboxes'])."\n" ?>
 					</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_pre_checkbox_fieldset_end')) ? eval($hook) : null; ?>
 				</fieldset>
@@ -199,8 +204,8 @@ if (!empty($forum_page['checkboxes']))
 
 ?>
 			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="submit_button" value="<?php echo ($tid) ? $lang_post['Submit reply'] : $lang_post['Submit topic'] ?>" /></span>
-				<span class="submit"><input type="submit" name="preview" value="<?php echo ($tid) ? $lang_post['Preview reply'] : $lang_post['Preview topic'] ?>" /></span>
+				<span class="submit primary"><input type="submit" name="submit_button" value="<?= ($tid) ? $lang_post['Submit reply'] : $lang_post['Submit topic'] ?>" /></span>
+				<span class="submit"><input type="submit" name="preview" value="<?= ($tid) ? $lang_post['Preview reply'] : $lang_post['Preview topic'] ?>" /></span>
 			</div>
 		</form>
 	</div>
@@ -216,7 +221,7 @@ if ($tid && $forum_config['o_topic_review'] != '0')
 
 ?>
 	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo $lang_post['Topic review'] ?></span></h2>
+		<h2 class="hn"><span><?= $lang_post['Topic review'] ?></span></h2>
 	</div>
 	<div id="topic-review" class="main-content main-frm">
 <?php
@@ -241,13 +246,13 @@ if ($tid && $forum_config['o_topic_review'] != '0')
 ?>
 		<div class="post<?php if ($forum_page['item_count'] == 1) echo ' firstpost'; ?><?php if ($forum_page['item_total'] == $forum_page['item_count']) echo ' lastpost'; ?>">
 			<div class="posthead">
-				<h3 class="hn post-ident"><?php echo implode(' ', $forum_page['post_ident']) ?></h3>
+				<h3 class="hn post-ident"><?= implode(' ', $forum_page['post_ident']) ?></h3>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_topic_review_new_post_head_option')) ? eval($hook) : null; ?>
 			</div>
 			<div class="postbody">
 				<div class="post-entry">
 					<div class="entry-content">
-						<?php echo $forum_page['message']."\n" ?>
+						<?= $forum_page['message']."\n" ?>
 <?php ($hook = \Punbb\ForumFunction::get_hook('po_topic_review_new_post_entry_data')) ? eval($hook) : null; ?>
 					</div>
 				</div>

@@ -2,6 +2,7 @@
 
 <?php
 
+$forum_page['group_count'] = $forum_page['item_count'] = $forum_page['fld_count'] = 0;
 
 // Navigation links for header and page numbering for title/meta description
 if ($forum_page['page'] < $forum_page['num_pages'])
@@ -21,7 +22,7 @@ if ($forum_config['o_censoring'] == '1')
 // Generate paging and posting links
 $forum_page['page_post']['paging'] = '<p class="paging"><span class="pages">'.$lang_common['Pages'].'</span> '.\Punbb\ForumFunction::paginate($forum_page['num_pages'], $forum_page['page'], $forum_url['topic'], $lang_common['Paging separator'], array($id, \Punbb\ForumFunction::sef_friendly($cur_topic['subject']))).'</p>';
 
-if ($forum_user['may_post'])
+if ($forum_page['may_post'])
 	$forum_page['page_post']['posting'] = '<p class="posting"><a class="newpost" href="'.\Punbb\ForumFunction::forum_link($forum_url['new_reply'], $id).'"><span>'.$lang_topic['Post reply'].'</span></a></p>';
 else if ($forum_user['is_guest'])
 	$forum_page['page_post']['posting'] = '<p class="posting">'.sprintf($lang_topic['Login to post'], '<a href="'.\Punbb\ForumFunction::forum_link($forum_url['login']).'">'.$lang_common['login'].'</a>', '<a href="'.\Punbb\ForumFunction::forum_link($forum_url['register']).'">'.$lang_common['register'].'</a>').'</p>';

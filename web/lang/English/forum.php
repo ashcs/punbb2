@@ -1,7 +1,7 @@
 <?php
 
 // Language definitions used in viewforum.php
-$lang_forum = array(
+return $lang_forum = array(
 
 'Forum subtitle'			=>	'%1$s in this forum with details of %2$s.',
 'Search subtitle'			=>	'%1$s found with details of %2$s.',

@@ -264,3 +264,12 @@ else
 <?php
 
 }
+?>
+
+<?php $this->push('forum_main_pagepost_top') ?>
+<?= $this->insert('partials/pager_top', ['forum_page' => $forum_page]) ?>
+<?php $this->end() ?>
+
+<?php $this->push('forum_main_pagepost_end') ?>
+<?= $this->insert('partials/pager_end', ['forum_page' => $forum_page]) ?>
+<?php $this->end() ?>

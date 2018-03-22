@@ -1,7 +1,7 @@
 <?php
 
 // Language definitions used in post.php and edit.php
-$lang_post = array(
+return $lang_post = array(
 
 // Post validation stuff (many are similar to those in edit.php)
 'No subject'			=>	'Topics must contain a subject.',

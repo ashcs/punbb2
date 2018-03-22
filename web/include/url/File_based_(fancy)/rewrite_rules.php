@@ -9,14 +9,25 @@
 
 
 $forum_rewrite_rules = array(
+    '/\//'                                                                  => [['GET' => ['Index', 'Index']]],
+    
+    '/^forum[\/_-]?([0-9]+).*[\/_-]p(age)?[\/_-]?([0-9]+)(\.html?|\/)?$/i'	=> [['GET' => ['Forum', 'test']], [1 => 'id', 3 => 'p']], //'view$1.php?id=$2&p=$4',
+    '/^forum[\/_-]?([0-9]+).*(\.html?|\/)?$/i'								=> [['GET' => ['Forum', 'test']], [1 => 'id']], //'view$1.php?id=$2',
+    
+    '/^topic[\/_-]?([0-9]+).*[\/_-]p(age)?[\/_-]?([0-9]+)(\.html?|\/)?$/i'	=> [['GET' => ['Topic', 'Index']], [1 => 'id', 3 => 'p']], //'view$1.php?id=$2&p=$4',
+    '/^topic[\/_-]?([0-9]+).*(\.html?|\/)?$/i'								=> [['GET' => ['Topic', 'Index']], [1 => 'id']], //'view$1.php?id=$2',
+    '/^post[\/_-]?([0-9]+)(\.html?|\/)?$/i'	                                => [['GET' => ['Topic', 'ViewByPostId']], [1 => 'pid']], //	'viewtopic.php?pid=$1',
+    
+    '/^new[\/_-]?reply[\/_-]?([0-9]+)(\.html?|\/)?$/i'	                            => [['GET' => ['Post', 'NewPostAction'], 'POST' => ['Post', 'SendNewPostAction']], [1 => 'id']], //'post.php?tid=$1',
+    '/^new[\/_-]?reply[\/_-]?([0-9]+)[\/_-]?quote[\/_-]?([0-9]+)(\.html?|\/)?$/i'   => [['GET' => ['Post', 'NewPostAction']], [1 => 'id', 2=> 'qid']], // 'post.php?tid=$1&qid=$2',
+    '/^new[\/_-]?topic[\/_-]?([0-9]+)(\.html?|\/)?$/i'	                            => [['GET' => ['Post', 'NewTopicAction'], 'POST' => ['Post', 'SendNewTopicAction']], [1 => 'fid']], //'post.php?fid=$1',
+ 
+    
+    
 	'/^topic[\/_-]?([0-9]+).*(new|last)[\/_-]?(posts?)(\.html?|\/)?$/i'														=>	'viewtopic.php?id=$1&action=$2',
-	'/^post[\/_-]?([0-9]+)(\.html?|\/)?$/i'																					=>	'viewtopic.php?pid=$1',
-	'/^(forum|topic)[\/_-]?([0-9]+).*[\/_-]p(age)?[\/_-]?([0-9]+)(\.html?|\/)?$/i'											=>	'view$1.php?id=$2&p=$4',
+	
 	'/^feed[\/_-]?(rss|atom)[\/_-]?(f|t)(orum|opic)[\/_-]?([0-9]+)[\/_-]?(\.xml?|\/)?$/i'									=>	'extern.php?action=feed&$2id=$4&type=$1',
-	'/^(forum|topic)[\/_-]?([0-9]+).*(\.html?|\/)?$/i'																		=>	'view$1.php?id=$2',
-	'/^new[\/_-]?reply[\/_-]?([0-9]+)(\.html?|\/)?$/i'																		=>	'post.php?tid=$1',
-	'/^new[\/_-]?reply[\/_-]?([0-9]+)[\/_-]?quote[\/_-]?([0-9]+)(\.html?|\/)?$/i'											=>	'post.php?tid=$1&qid=$2',
-	'/^new[\/_-]?topic[\/_-]?([0-9]+)(\.html?|\/)?$/i'																		=>	'post.php?fid=$1',
+
 	'/^(delete|edit)[\/_-]?([0-9]+)(\.html?|\/)?$/i'																		=>	'$1.php?id=$2',
 	'/^(login|search|register)(\.html?|\/)?$/i'																				=>	'$1.php',
 	'/^logout[\/_-]?([0-9]+)[\/_-]([a-z0-9]+)(\.html?|\/)?$/i'																=>	'login.php?action=out&id=$1&csrf_token=$2',
