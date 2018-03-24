@@ -22,8 +22,15 @@ $forum_rewrite_rules = array(
     '/^new[\/_-]?reply[\/_-]?([0-9]+)[\/_-]?quote[\/_-]?([0-9]+)(\.html?|\/)?$/i'   => [['GET' => ['Post', 'NewPostAction']], [1 => 'id', 2=> 'qid']], // 'post.php?tid=$1&qid=$2',
     '/^new[\/_-]?topic[\/_-]?([0-9]+)(\.html?|\/)?$/i'	                            => [['GET' => ['Post', 'NewTopicAction'], 'POST' => ['Post', 'SendNewTopicAction']], [1 => 'fid']], //'post.php?fid=$1',
  
+
+    
+    '/^edit[\/_-]?([0-9]+)(\.html?|\/)?$/i'						=> [['GET' => ['Edit', 'GetPostAction'], 'POST' => ['Edit', 'UpdatePostAction']], [1 => 'id']], //=>	'$1.php?id=$2',
     
     
+    
+    
+    
+    '/^(delete|edit)[\/_-]?([0-9]+)(\.html?|\/)?$/i'																		=>	'$1.php?id=$2',
 	'/^topic[\/_-]?([0-9]+).*(new|last)[\/_-]?(posts?)(\.html?|\/)?$/i'														=>	'viewtopic.php?id=$1&action=$2',
 	
 	'/^feed[\/_-]?(rss|atom)[\/_-]?(f|t)(orum|opic)[\/_-]?([0-9]+)[\/_-]?(\.xml?|\/)?$/i'									=>	'extern.php?action=feed&$2id=$4&type=$1',

@@ -2,12 +2,14 @@
 
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_main_output_start')) ? eval($hook) : null; ?>
 	<div class="main-head">
-		<h2 class="hn"><span><?php echo ($id == $cur_post['first_post_id']) ? $lang_post['Edit topic'] : $lang_post['Edit reply'] ?></span></h2>
+		<h2 class="hn"><span><?=  ($id == $cur_post['first_post_id']) ? $lang_post['Edit topic'] : $lang_post['Edit reply'] ?></span></h2>
 	</div>
 <?php
 
+$forum_page['group_count'] = $forum_page['item_count'] = $forum_page['fld_count'] = 0;
+
 // If preview selected and there are no errors
-if (isset($_POST['preview']) && empty($forum_page['errors']))
+if (isset($_POST['preview']) && empty($errors))
 {
 	if (!defined('FORUM_PARSER_LOADED'))
 		require FORUM_ROOT.'include/parser.php';
@@ -24,18 +26,18 @@ if (isset($_POST['preview']) && empty($forum_page['errors']))
 
 ?>
 	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo $id == $cur_post['first_post_id'] ? $lang_post['Preview edited topic'] : $lang_post['Preview edited reply'] ?></span></h2>
+		<h2 class="hn"><span><?=  $id == $cur_post['first_post_id'] ? $lang_post['Preview edited topic'] : $lang_post['Preview edited reply'] ?></span></h2>
 	</div>
 	<div id="post-preview" class="main-content main-frm">
 		<div class="post singlepost">
 			<div class="posthead">
-				<h3 class="hn"><?php echo implode(' ', $forum_page['post_ident']) ?></h3>
+				<h3 class="hn"><?=  implode(' ', $forum_page['post_ident']) ?></h3>
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_preview_new_post_head_option')) ? eval($hook) : null; ?>
 			</div>
 			<div class="postbody">
 				<div class="post-entry">
 					<div class="entry-content">
-						<?php echo $forum_page['preview_message']."\n" ?>
+						<?=  $forum_page['preview_message']."\n" ?>
 					</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_preview_new_post_entry_data')) ? eval($hook) : null; ?>
 				</div>
@@ -48,7 +50,7 @@ if (isset($_POST['preview']) && empty($forum_page['errors']))
 
 ?>
 	<div class="main-subhead">
-		<h2 class="hn"><span><?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Compose edited reply'] : $lang_post['Compose edited topic'] ?></span></h2>
+		<h2 class="hn"><span><?=  ($id != $cur_post['first_post_id']) ? $lang_post['Compose edited reply'] : $lang_post['Compose edited topic'] ?></span></h2>
 	</div>
 	<div id="post-form" class="main-content main-frm">
 <?php
@@ -57,14 +59,16 @@ if (isset($_POST['preview']) && empty($forum_page['errors']))
 		echo "\t\t".'<p class="ct-options options">'.sprintf($lang_common['You may use'], implode(' ', $forum_page['text_options'])).'</p>'."\n";
 
 // If there were any errors, show them
-if (isset($forum_page['errors']))
+if (!empty($errors))
 {
 
 ?>
 		<div class="ct-box error-box">
-			<h2 class="warn hn"><span><?php echo $lang_post['Post errors'] ?></span></h2>
+			<h2 class="warn hn"><span><?=  $lang_post['Post errors'] ?></span></h2>
 			<ul class="error-list">
-				<?php echo implode("\n\t\t\t\t", $forum_page['errors'])."\n" ?>
+			<?php foreach ($errors as $cur_error) : ?>
+				<li><span><?= $cur_error ?></span></li>
+			<?php endforeach ?>
 			</ul>
 		</div>
 <?php
@@ -73,26 +77,27 @@ if (isset($forum_page['errors']))
 
 ?>
 		<div id="req-msg" class="req-warn ct-box error-box">
-			<p class="important"><?php echo $lang_common['Required warn'] ?></p>
+			<p class="important"><?=  $lang_common['Required warn'] ?></p>
 		</div>
-		<form id="afocus" class="frm-form frm-ctrl-submit" method="post" accept-charset="utf-8" action="<?php echo $forum_page['form_action'] ?>"<?php if (!empty($forum_page['form_attributes'])) echo ' '.implode(' ', $forum_page['form_attributes']) ?>>
+		<form id="afocus" class="frm-form frm-ctrl-submit" method="post" accept-charset="utf-8" action="<?=  $forum_page['form_action'] ?>"<?php if (!empty($forum_page['form_attributes'])) echo ' '.implode(' ', $forum_page['form_attributes']) ?>>
 			<div class="hidden">
-				<?php echo implode("\n\t\t\t\t", $forum_page['hidden_fields'])."\n" ?>
+				<input type="hidden" name="form_sent" value="1" />
+				<input type="hidden" name="csrf_token" value="<?= \Punbb\ForumFunction::generate_form_token($forum_page['form_action']) ?>" />
 			</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_pre_main_fieldset')) ? eval($hook) : null; ?>
-			<fieldset class="frm-group group<?php echo ++$forum_page['group_count'] ?>">
-				<legend class="group-legend"><strong><?php echo $lang_post['Edit post legend'] ?></strong></legend>
+			<fieldset class="frm-group group<?=  ++$forum_page['group_count'] ?>">
+				<legend class="group-legend"><strong><?=  $lang_post['Edit post legend'] ?></strong></legend>
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_pre_subject')) ? eval($hook) : null; ?>
-<?php if ($can_edit_subject): ?>				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+<?php if ($can_edit_subject): ?>				<div class="sf-set set<?=  ++$forum_page['item_count'] ?>">
 					<div class="sf-box text required">
-						<label for="fld<?php echo ++ $forum_page['fld_count'] ?>"><span><?php echo $lang_post['Topic subject'] ?></span></label><br />
-						<span class="fld-input"><input id="fld<?php echo $forum_page['fld_count'] ?>" type="text" name="req_subject" size="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?php echo FORUM_SUBJECT_MAXIMUM_LENGTH ?>" value="<?php echo \Punbb\ForumFunction::forum_htmlencode(isset($_POST['req_subject']) ? $_POST['req_subject'] : $cur_post['subject']) ?>" required /></span>
+						<label for="fld<?=  ++ $forum_page['fld_count'] ?>"><span><?=  $lang_post['Topic subject'] ?></span></label><br />
+						<span class="fld-input"><input id="fld<?=  $forum_page['fld_count'] ?>" type="text" name="req_subject" size="<?=  FORUM_SUBJECT_MAXIMUM_LENGTH ?>" maxlength="<?=  FORUM_SUBJECT_MAXIMUM_LENGTH ?>" value="<?=  \Punbb\ForumFunction::forum_htmlencode(isset($_POST['req_subject']) ? $_POST['req_subject'] : $cur_post['subject']) ?>" required /></span>
 					</div>
 				</div>
-<?php endif; ($hook = \Punbb\ForumFunction::get_hook('ed_pre_message_box')) ? eval($hook) : null; ?>				<div class="txt-set set<?php echo ++$forum_page['item_count'] ?>">
+<?php endif; ($hook = \Punbb\ForumFunction::get_hook('ed_pre_message_box')) ? eval($hook) : null; ?>				<div class="txt-set set<?=  ++$forum_page['item_count'] ?>">
 					<div class="txt-box textarea required">
-						<label for="fld<?php echo ++ $forum_page['fld_count'] ?>"><span><?php echo $lang_post['Write message'] ?></span></label>
-						<div class="txt-input"><span class="fld-input"><textarea id="fld<?php echo $forum_page['fld_count'] ?>" name="req_message" rows="15" cols="95" required spellcheck="true"><?php echo \Punbb\ForumFunction::forum_htmlencode(isset($_POST['req_message']) ? $message : $cur_post['message']) ?></textarea></span></div>
+						<label for="fld<?=  ++ $forum_page['fld_count'] ?>"><span><?=  $lang_post['Write message'] ?></span></label>
+						<div class="txt-input"><span class="fld-input"><textarea id="fld<?=  $forum_page['fld_count'] ?>" name="req_message" rows="15" cols="95" required spellcheck="true"><?=  \Punbb\ForumFunction::forum_htmlencode(isset($_POST['req_message']) ? $message : $cur_post['message']) ?></textarea></span></div>
 					</div>
 				</div>
 <?php
@@ -120,9 +125,9 @@ if (!empty($forum_page['checkboxes']))
 {
 
 ?>
-				<fieldset class="mf-set set<?php echo ++$forum_page['item_count'] ?>">
+				<fieldset class="mf-set set<?=  ++$forum_page['item_count'] ?>">
 					<div class="mf-box checkbox">
-						<?php echo implode("\n\t\t\t\t\t", $forum_page['checkboxes'])."\n" ?>
+						<?=  implode("\n\t\t\t\t\t", $forum_page['checkboxes'])."\n" ?>
 					</div>
 <?php ($hook = \Punbb\ForumFunction::get_hook('ed_pre_checkbox_fieldset_end')) ? eval($hook) : null; ?>
 				</fieldset>
@@ -140,8 +145,8 @@ if (!empty($forum_page['checkboxes']))
 
 ?>
 			<div class="frm-buttons">
-				<span class="submit primary"><input type="submit" name="submit_button" value="<?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Submit reply'] : $lang_post['Submit topic'] ?>" /></span>
-				<span class="submit"><input type="submit" name="preview" value="<?php echo ($id != $cur_post['first_post_id']) ? $lang_post['Preview reply'] : $lang_post['Preview topic'] ?>" /></span>
+				<span class="submit primary"><input type="submit" name="submit_button" value="<?=  ($id != $cur_post['first_post_id']) ? $lang_post['Submit reply'] : $lang_post['Submit topic'] ?>" /></span>
+				<span class="submit"><input type="submit" name="preview" value="<?=  ($id != $cur_post['first_post_id']) ? $lang_post['Preview reply'] : $lang_post['Preview topic'] ?>" /></span>
 			</div>
 		</form>
 	</div>

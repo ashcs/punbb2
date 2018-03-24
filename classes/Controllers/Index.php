@@ -40,12 +40,12 @@ class Index extends Base {
         
         $c['breadcrumbs']->addCrumb($c['config']['o_board_title']);
         
-        return $c['templates']->render('index', [
+        return ['template' => 'index', 'data' => [
             'new_topics'   => $new_topics,
             'forums'        => $this->gateway->getForums($c['user']),
             'lang_index'    => $c['lang_index'],
             'forum_stats'   => Cache::load_stats(),
             'forum_page' => $forum_page
-        ]);
+        ]];
     }
 }

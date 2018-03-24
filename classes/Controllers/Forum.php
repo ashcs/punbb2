@@ -70,13 +70,13 @@ class Forum extends Base {
             F::sef_friendly($cur_forum['forum_name'])
         )) . '" rel="bookmark" title="' .$c['lang_forum']['Permalink forum'] . '">' . F::forum_htmlencode($cur_forum['forum_name']) . '</a>';
                 
-        return $c['templates']->render('viewforum', [
+        return ['template' => 'viewforum', 'data' => [
             'cur_forum' => $cur_forum,
             'lang_forum' =>$c['lang_forum'],
             'id' => $id,
             'tracked_topics' => $tracked_topics,
             'topics' => $topics,
             'forum_page' => $forum_page
-        ]);
+        ]];
     }
 }

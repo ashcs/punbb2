@@ -268,7 +268,11 @@ $result = call_user_func_array(
     [$controller, $rewrite_to[0][$http_method][1]], $params
 );
 
-$response->getBody()->write($result);
+$c['templates']->addData(['tpl_start' => ForumFunction::forum_microtime()]);
+
+$response->getBody()->write($c['templates']->render($result['template'], $result['data']));
+
+//$response->getBody()->write($result);
 
 $emitter->emit($response);
 

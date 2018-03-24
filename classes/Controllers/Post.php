@@ -41,7 +41,7 @@ class Post extends Base {
         
         $forum_page['total_post_count'] = $this->gateway->getAmountPost($topic_id);
         
-        return $c['templates']->render('post', [
+        return ['template' => 'post', 'data' => [
             'lang_post' => $c['lang_post'],
             'posts' => $this->gateway->getTopicPreview($topic_id, $c['config']),
             'tid' => $topic_id,
@@ -50,7 +50,7 @@ class Post extends Base {
             'is_subscribed' => $this->is_subscribed,
             'errors' => $this->errors,
             'forum_page'    => $forum_page
-        ]);
+        ]];
     }
 
     function SendNewPostAction($topic_id) {
@@ -61,8 +61,8 @@ class Post extends Base {
         $params = $this->processPosting(false);
 
         if (empty($this->errors) && ! isset($_POST['preview'])) {
-            
-            $post_info = array(
+           
+            $new_pid = $this->gateway->addPost(array(
                 'is_guest' => $c['user']['is_guest'],
                 'poster' => $params['username'],
                 'poster_id' => $c['user']['id'], // Always 1 for guest posts
@@ -76,9 +76,7 @@ class Post extends Base {
                 'forum_id' => $cur_posting['id'],
                 'update_user' => true,
                 'update_unread' => true
-            );
-            
-            F::add_post($post_info, $new_pid);
+            ));
         
             F::redirect(F::forum_link($c['url']['post'], $new_pid), $c['lang_post']['Post redirect']);
         }
@@ -94,7 +92,7 @@ class Post extends Base {
         
         if (empty($this->errors) && ! isset($_POST['preview'])) {
             
-            $post_info = array(
+            $result = $this->gateway->addTopic( array(
                 'is_guest'		=> $c['user']['is_guest'],
                 'poster'		=> $params['username'],
                 'poster_id'		=> $c['user']['id'],	// Always 1 for guest posts
@@ -108,11 +106,9 @@ class Post extends Base {
                 'forum_name'	=> $cur_posting['forum_name'],
                 'update_user'	=> true,
                 'update_unread'	=> true
-            );
+            ));
             
-            F::add_topic($post_info, $new_tid, $new_pid);
-            
-            F::redirect(F::forum_link($c['url']['post'], $new_pid), $c['lang_post']['Post redirect']);
+            F::redirect(F::forum_link($c['url']['post'], $result['new_pid']), $c['lang_post']['Post redirect']);
         }
         
         return $this->NewTopicAction($forum_id);
@@ -130,7 +126,7 @@ class Post extends Base {
         ->addCrumb($cur_posting['forum_name'],F::forum_link($c['url']['forum'], array($cur_posting['id'], F::sef_friendly($cur_posting['forum_name']))))
         ->addCrumb($c['lang_post']['Post new topic']);
         
-        return $c['templates']->render('post', [
+        return ['template' => 'post', 'data' => [
             'lang_post' => $c['lang_post'],
             'tid' => 0,
             'fid' => $forum_id,
@@ -138,7 +134,7 @@ class Post extends Base {
             'is_subscribed' => $this->is_subscribed,
             'errors' => $this->errors,
             'forum_page'    => $forum_page
-        ]);
+        ]];
         
     }
     

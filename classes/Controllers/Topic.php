@@ -62,8 +62,8 @@ class Topic extends Base {
            F::sef_friendly($cur_topic['forum_name'])
         )));
         $c['breadcrumbs']->addCrumb($cur_topic['subject']);
-        
-        return $c['templates']->render('viewtopic', [
+
+        return ['template' => 'viewtopic', 'data' => [
             'posts' => $this->gateway->getPosts($id, $forum_page, $c['user']),
             'lang_topic' => $c['lang_topic'],
             'id' => $id,
@@ -71,9 +71,8 @@ class Topic extends Base {
             'cur_topic' => $cur_topic,
             'tracked_topics' => $tracked_topics,
             'forum_user' => $c['user'],
-            'forum_page'    => $forum_page
-        ]);
-                
+            'forum_page' => $forum_page
+        ]];
     }
     
     public function ViewByPostId($pid) {

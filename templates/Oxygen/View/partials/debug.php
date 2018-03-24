@@ -6,7 +6,8 @@ if (defined('FORUM_DEBUG') || defined('FORUM_SHOW_QUERIES'))
     if (defined('FORUM_DEBUG'))
     {
         // Calculate script generation time
-        $time_diff = \Punbb\ForumFunction::forum_microtime() - $forum_start;
+        $forum_stop = \Punbb\ForumFunction::forum_microtime();
+        $time_diff = $forum_stop - $forum_start;
         $query_time_total = $time_percent_db = 0.0;
         
         $saved_queries = $forum_db->get_saved_queries();
@@ -27,7 +28,8 @@ if (defined('FORUM_DEBUG') || defined('FORUM_SHOW_QUERIES'))
             \Punbb\ForumFunction::forum_number_format($time_diff, 3),
             \Punbb\ForumFunction::forum_number_format(100 - $time_percent_db, 0),
             \Punbb\ForumFunction::forum_number_format($time_percent_db, 0),
-            \Punbb\ForumFunction::forum_number_format($forum_db->get_num_queries())).'</p>'."\n";
+            \Punbb\ForumFunction::forum_number_format($forum_db->get_num_queries())).'; template rendering: '.
+            \Punbb\ForumFunction::forum_number_format($forum_stop - $tpl_start, 3).'</p>'."\n";
     }
     
     if (defined('FORUM_SHOW_QUERIES'))
