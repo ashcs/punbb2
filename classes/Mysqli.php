@@ -2,7 +2,7 @@
 /**
  * A database layer class that relies on the MySQLi PHP extension.
  *
- * @copyright (C) 2008-2016 PunBB, partially based on code (C) 2008-2009 FluxBB.org
+ * @copyright (C) 2008-2018 PunBB, partially based on code (C) 2008-2009 FluxBB.org
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package PunBB
  */
@@ -13,7 +13,7 @@ if (!function_exists('mysqli_connect'))
 	exit('This PHP environment doesn\'t have Improved MySQL (mysqli) support built in. Improved MySQL support is required if you want to use a MySQL 4.1 (or later) database to run this forum. Consult the PHP documentation for further assistance.');
 
 
-class DBLayer
+class Mysqli
 {
 	var $prefix;
 	var $link_id;

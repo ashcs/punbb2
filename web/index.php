@@ -268,10 +268,22 @@ $result = call_user_func_array(
     [$controller, $rewrite_to[0][$http_method][1]], $params
 );
 
+/*
 $c['templates']->addData(['tpl_start' => ForumFunction::forum_microtime()]);
 
-$response->getBody()->write($c['templates']->render($result['template'], $result['data']));
+c['templates']->render($result['template'], $result['data']));
+*/
+$v = FORUM_ROOT . '../transphporm/View/';
+$template = new \Transphporm\Builder($v . 'main.html', $v . $result['template'].'.tss');
 
+$template->loadModule(new \Punbb\Functions());
+
+$result['data']['config'] = $forum_config;
+$result['data']['url'] = $forum_url;
+$result['data']['flash'] = $forum_flash->show();
+$result['data']['view_users'] = ($forum_user['g_read_board'] == '1' && $forum_user['g_view_users'] == '1');
+
+$response->getBody()->write($template->output($result['data'])->body);
 //$response->getBody()->write($result);
 
 $emitter->emit($response);

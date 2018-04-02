@@ -45,7 +45,8 @@ class Index extends Base {
             'forums'        => $this->gateway->getForums($c['user']),
             'lang_index'    => $c['lang_index'],
             'forum_stats'   => Cache::load_stats(),
-            'forum_page' => $forum_page
+            'forum_page' => $forum_page,
+            'page'  => 'index',
         ]];
     }
 }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" media="screen" href="/style/Oxygen/Oxygen.min.css" />
+
+
+</head>
+<body>
+
+<div id="brd-messages" class="brd"></div>
+
+
+<div id="brd-wrap" class="brd">
+	<div id="brd-default" class="brd-page">
+		<div id="brd-head" class="gen-content">
+			<p id="brd-access"><a href="#brd-main">Skip to forum content</a></p>
+			<p id="brd-title"><a href="#"></a></p>
+			<p id="brd-desc"></p>
+		</div>
+
+		<div id="brd-navlinks" class="gen-content">
+			<ul>
+				<li id="navindex"><a href="">Index</a></li>
+				<li id="navuserlist"><a href="">User list</a></li>
+
+	if ($forum_config['o_rules'] == '1' && (!$forum_user['is_guest'] || $forum_user['g_read_board'] == '1' || $forum_config['o_regs_allow'] == '1'))
+		$links['rules'] = '<li id="navrules"'.((FORUM_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['rules']).'">'.$lang_common['Rules'].'</a></li>';
+
+	if ($forum_user['is_guest'])
+	{
+		if ($forum_user['g_read_board'] == '1' && $forum_user['g_search'] == '1')
+			$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
+
+		$links['register'] = '<li id="navregister"'.((FORUM_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['register']).'">'.$lang_common['Register'].'</a></li>';
+		$links['login'] = '<li id="navlogin"'.((FORUM_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['login']).'">'.$lang_common['Login'].'</a></li>';
+	}
+	else
+	{
+		if (!$forum_user['is_admmod'])
+		{
+			if ($forum_user['g_read_board'] == '1' && $forum_user['g_search'] == '1')
+				$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
+
+			$links['profile'] = '<li id="navprofile"'.((substr(FORUM_PAGE, 0, 7) == 'profile') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['user'], $forum_user['id']).'">'.$lang_common['Profile'].'</a></li>';
+			$links['logout'] = '<li id="navlogout"><a href="'.static::forum_link($forum_url['logout'], array($forum_user['id'], static::generate_form_token('logout'.$forum_user['id']))).'">'.$lang_common['Logout'].'</a></li>';
+		}
+		else
+		{
+			$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
+			$links['profile'] = '<li id="navprofile"'.((substr(FORUM_PAGE, 0, 7) == 'profile') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['user'], $forum_user['id']).'">'.$lang_common['Profile'].'</a></li>';
+			$links['admin'] = '<li id="navadmin"'.((substr(FORUM_PAGE, 0, 5) == 'admin') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['admin_index']).'">'.$lang_common['Admin'].'</a></li>';
+			$links['logout'] = '<li id="navlogout"><a href="'.static::forum_link($forum_url['logout'], array($forum_user['id'], static::generate_form_token('logout'.$forum_user['id']))).'">'.$lang_common['Logout'].'</a></li>';
+		}
+	}
+				
+			</ul>
+		</div>
+
+		<div id="brd-visit" class="gen-content">
+			<p id="welcome">
+				<span id="welcome_guest">You are not logged in.</span> <span>Please login or register.?></span>
+				<span id="welcome_user"></span>
+			</p>
+			<p id="visit-links" class="options">
+				<span id="visit-new"><a href="" title="Find topics containing posts made since your last visit.">New posts</a></span>
+				<span id="visit-recent"><a href="" title="Find topics which contain recent posts.">Active topics</a></span>
+				<span id="visit-unanswered"><a href="" title="Find topics which have not been replied to.">Unanswered topics</a></span>
+			</p>
+		</div>
+
+		<div id="brd-announcement" class="gen-content">
+			<h1 class="hn"><span><!-- $forum_config['o_announcement_heading'] --></span></h1>
+			<div class="content">
+                <!-- $forum_config['o_announcement_message'] -->
+			</div>
+		</div>
+
+		<div class="hr"><hr /></div>
+		
+		<div id="brd-main">
+			<h1 class="main-title"><!-- $forum_page['main_title'] --></h1>
+			<div id="brd-crumbs-top" class="crumbs">
+			    <!-- $container['breadcrumbs']->render() -->
+			</div>
+
+			<div class="main-menu gen-content">
+				<ul>
+				</ul>
+			</div>
+
+			<div id="brd-pagepost-top" class="main-pagepost gen-content">
+				<!-- implode("\n\t", $forum_page['page_post']) -->
+			</div>
+			
+			<div id="main_content">
+                <!-- $this->section('content') -->
+			</div>
+			
+			<div id="brd-pagepost-end" class="main-pagepost gen-content">
+                <!-- implode("\n\t", $forum_page['page_post']) -->
+			</div>
+				
+			<div id="brd-crumbs-end" class="crumbs">
+                <!-- $container['breadcrumbs']->render() -->
+			</div>
+
+		</div>
+				
+		<div class="hr"><hr /></div>
+		
+		<div id="brd-about">
+			<p id="copyright"><!-- sprintf($lang_common['Powered by'], '<a href="http://punbb.informer.com/">PunBB</a>'.($forum_config['o_show_version'] == '1' ? ' '.$forum_config['o_cur_version'] : ''), '<a href="http://www.informer.com/">Informer Technologies, Inc</a>') --></p>
+		</div>
+		
+		<div id="debug">
+			<!-- $this->insert('partials/debug') -->
+			<!-- forum_debug -->
+		</div>
+	</div>
+</div>
+
+<!-- forum_javascript -->
+<script>
+var main_menu = responsiveNav("#brd-navlinks", {
+	label: "<!-- forum_board_title -->"
+});
+if(document.getElementsByClassName('admin-menu').length){
+	var admin_menu = responsiveNav(".admin-menu", {
+		label: "<!-- forum_lang_menu_admin -->"
+	});
+}
+if(document.getElementsByClassName('main-menu').length){
+	var profile_menu = responsiveNav(".main-menu", {
+	    label: "<!-- forum_lang_menu_profile -->"
+	});
+}
+</script>
+</body>
+</html>

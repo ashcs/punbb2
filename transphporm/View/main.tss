@@ -1,0 +1,20 @@
+#brd-title a {content: data(config.o_board_title)}
+
+#brd-desc:data[config.o_board_desc!=""] {content: data(config.o_board_desc);}
+
+#brd-title a:attr(href) {content: forum_link(data(url.index));}
+
+#brd-messages:data[flash=""] {display: none;}
+
+
+
+#navindex a {content: attr(content), attr(content);}
+
+#navindex a:attr(href) {content: forum_link(data(url.index));}
+
+#navindex:attr(class):data[page="index"] {content: attr(class), " isactive"}
+
+#navuserlist:data[view_users!=true] {display: none;}
+
+#navuserlist a:attr(href) {content: forum_link(data(url.users));}
+ 
