@@ -1,1 +1,37 @@
 @import "main.tss";
+
+#main_content {content: template('index.html')}
+
+.cat-container {repeat: data(forums));}
+
+.cat-container h2 span:{content: iteration(cat_name); }
+.cat-container .main-item{repeat: data(iteration(forums));}
+
+.cat-container  .info_topics strong  {content: iteration(num_topics);}
+
+.cat-container  .info_posts strong {content: iteration(num_posts);}
+
+
+
+.cat-container .main-item .item-subject h3 a span {
+	content: iteration(forum_name);
+}
+
+.cat-container .main-item .item-subject h3 a:attr(href) {
+	content: forum_link(data(url.forum), iteration(fid), friendly(iteration(forum_name)) );
+}
+
+.cat-container .main-item .item-subject p:before {
+	content:iteration(forum_desc);
+}
+
+
+.cat-container .modlist:data[iteration(moderators)=''] {display: none;}
+.cat-container .modlist .mod-item {repeat: data(iteration(moderators));}
+
+.cat-container .modlist .mod-item a {content: key() ;}
+.cat-container .modlist .mod-item a:attr(href) {content: forum_link(data(url.user), iteration());}
+
+.subject-title, .info-topics, .info-posts, .info-lastpost {content: getVal(); format: translate ;}
+
+#brd-stats .st-users span {content: "sdsds"}

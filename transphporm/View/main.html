@@ -25,37 +25,16 @@
 			<ul>
 				<li id="navindex"><a href="">Index</a></li>
 				<li id="navuserlist"><a href="">User list</a></li>
+				<li id="navrules"><a href="">Rules</a></li>
 
-	if ($forum_config['o_rules'] == '1' && (!$forum_user['is_guest'] || $forum_user['g_read_board'] == '1' || $forum_config['o_regs_allow'] == '1'))
-		$links['rules'] = '<li id="navrules"'.((FORUM_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['rules']).'">'.$lang_common['Rules'].'</a></li>';
+				<li id="navsearch"><a href="">Search</a></li>
 
-	if ($forum_user['is_guest'])
-	{
-		if ($forum_user['g_read_board'] == '1' && $forum_user['g_search'] == '1')
-			$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
-
-		$links['register'] = '<li id="navregister"'.((FORUM_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['register']).'">'.$lang_common['Register'].'</a></li>';
-		$links['login'] = '<li id="navlogin"'.((FORUM_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['login']).'">'.$lang_common['Login'].'</a></li>';
-	}
-	else
-	{
-		if (!$forum_user['is_admmod'])
-		{
-			if ($forum_user['g_read_board'] == '1' && $forum_user['g_search'] == '1')
-				$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
-
-			$links['profile'] = '<li id="navprofile"'.((substr(FORUM_PAGE, 0, 7) == 'profile') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['user'], $forum_user['id']).'">'.$lang_common['Profile'].'</a></li>';
-			$links['logout'] = '<li id="navlogout"><a href="'.static::forum_link($forum_url['logout'], array($forum_user['id'], static::generate_form_token('logout'.$forum_user['id']))).'">'.$lang_common['Logout'].'</a></li>';
-		}
-		else
-		{
-			$links['search'] = '<li id="navsearch"'.((FORUM_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['search']).'">'.$lang_common['Search'].'</a></li>';
-			$links['profile'] = '<li id="navprofile"'.((substr(FORUM_PAGE, 0, 7) == 'profile') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['user'], $forum_user['id']).'">'.$lang_common['Profile'].'</a></li>';
-			$links['admin'] = '<li id="navadmin"'.((substr(FORUM_PAGE, 0, 5) == 'admin') ? ' class="isactive"' : '').'><a href="'.static::forum_link($forum_url['admin_index']).'">'.$lang_common['Admin'].'</a></li>';
-			$links['logout'] = '<li id="navlogout"><a href="'.static::forum_link($forum_url['logout'], array($forum_user['id'], static::generate_form_token('logout'.$forum_user['id']))).'">'.$lang_common['Logout'].'</a></li>';
-		}
-	}
+				<li id="navregister"><a href="">Register</a></li>
+				<li id="navlogin"><a href="">Login</a></li>
 				
+				<li id="navprofile"><a href="">Profile</a></li>
+				<li id="navadmin"><a href="">Admin</a></li>
+				<li id="navlogout"><a href="">Logout</a></li>
 			</ul>
 		</div>
 

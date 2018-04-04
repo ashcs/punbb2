@@ -8,13 +8,44 @@
 
 
 
-#navindex a {content: attr(content), attr(content);}
-
+#navindex a {content: getVal(); format: translate ;}
 #navindex a:attr(href) {content: forum_link(data(url.index));}
-
 #navindex:attr(class):data[page="index"] {content: attr(class), " isactive"}
 
+#navuserlist a {content: getVal(); format: translate ;}
+#navuserlist a:attr(href) {content: forum_link(data(url.users));}
 #navuserlist:data[view_users!=true] {display: none;}
 
-#navuserlist a:attr(href) {content: forum_link(data(url.users));}
+#navrules a {content: getVal(); format: translate ;}
+#navindex a:attr(href) {content: forum_link(data(url.rules));}
+#navindex:data[view_rules!=true] {display: none;}
+
+
+#navsearch:data[user.g_read_board!=1] {display: none;}
+#navsearch:data[user.g_search!=1] {display: none;}
+#navsearch a:attr(href) {content: forum_link(data(url.search));}
+#navsearch a {content: getVal(); format: translate ;}
+
+#navregister:data[user.is_guest!=true] {display: none;}
+#navregister a:attr(href) {content: forum_link(data(url.register));}
+#navregister a {content: getVal(); format: translate ;}
+
+#navlogin:data[user.is_guest!=true] {display: none;}
+#navlogin a:attr(href) {content: forum_link(data(url.login));}
+#navlogin a {content: getVal(); format: translate ;}
+
+#navprofile:data[user.is_guest=true] {display: none;}
+#navprofile a:attr(href) {content: forum_link(data(url.user),data(user.id));}
+#navprofile a {content: getVal(); format: translate ;}
+
+#navadmin:data[user.is_admmod!=true] {display: none;}
+#navadmin a:attr(href) {content: forum_link(data(url.admin_index));}
+#navadmin a {content: getVal(); format: translate ;}
+
+#navlogout:data[user.is_guest=true] {display: none;}
+#navlogout a:attr(href) {content: forum_link(data(url.logout), data(user.id), csrf("logout", data(user.id)));}
+#navlogout a {content: getVal(); format: translate ;}
+
+
+
  

@@ -17,7 +17,8 @@ class Index extends Base {
     protected $gateway;
     
     
-    public function __construct(Container $c) {
+    public function __construct(Container $c)
+    {
         parent::__construct(__CLASS__, $c);
     }
 
@@ -39,6 +40,8 @@ class Index extends Base {
         $forum_page['cur_category'] = $forum_page['cat_count'] = $forum_page['item_count'] = 0;
         
         $c['breadcrumbs']->addCrumb($c['config']['o_board_title']);
+        
+        //var_dump($this->gateway->getForums($c['user']));exit;
         
         return ['template' => 'index', 'data' => [
             'new_topics'   => $new_topics,

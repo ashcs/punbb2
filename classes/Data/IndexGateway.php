@@ -68,11 +68,22 @@ class IndexGateway {
 	    
 	    ($hook = \Punbb\ForumFunction::get_hook('in_qr_get_cats_and_forums')) ? eval($hook) : null;
 	    $result = $this->forum_db->query_build($query) or \Punbb\ForumFunction::error(__FILE__, __LINE__);
-	    
-	    while ($cur_forum = $this->forum_db->fetch_assoc($result))
-	        $forums[] = $cur_forum;
+	    $category = $forums = [];
+	    while ($cur_forum = $this->forum_db->fetch_assoc($result)) {
 	        
-	        return $forums;
+	        if (!isset($category[$cur_forum['cid']])) {
+	            $category[$cur_forum['cid']] = [
+	                'cat_name' => $cur_forum['cat_name'],
+	                'forums'   => [],
+	            ];
+	        }
+	        
+	        $cur_forum['moderators'] = unserialize($cur_forum['moderators']);
+	           
+            $category[$cur_forum['cid']]['forums'][$cur_forum['fid']] = $cur_forum;
+	    }
+	        
+	    return $category;
 	}
 }
 

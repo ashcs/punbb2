@@ -273,17 +273,35 @@ $c['templates']->addData(['tpl_start' => ForumFunction::forum_microtime()]);
 
 c['templates']->render($result['template'], $result['data']));
 */
+
+list($usec, $sec) = explode(' ', microtime());
+$tpl_start = ((float)$usec + (float)$sec);
+
 $v = FORUM_ROOT . '../transphporm/View/';
 $template = new \Transphporm\Builder($v . 'main.html', $v . $result['template'].'.tss');
 
-$template->loadModule(new \Punbb\Functions());
+$tssModuleRegister = new \Punbb\Transphporm\Register;
 
+$translator = $tssModuleRegister->getTranslator();
+
+$translator->addLang($lang_common, $controller->getLang());
+
+//$tssModuleRegister->getTranslator()->addLang($lang_common, $controller->getLang());
+
+$template->loadModule($tssModuleRegister);
+
+$result['data']['user'] = $forum_user;
 $result['data']['config'] = $forum_config;
 $result['data']['url'] = $forum_url;
 $result['data']['flash'] = $forum_flash->show();
 $result['data']['view_users'] = ($forum_user['g_read_board'] == '1' && $forum_user['g_view_users'] == '1');
+$result['data']['view_rules'] = ($forum_config['o_rules'] == '1' && (!$forum_user['is_guest'] || $forum_user['g_read_board'] == '1' || $forum_config['o_regs_allow'] == '1'));
 
-$response->getBody()->write($template->output($result['data'])->body);
+
+
+//<!-- forum_debug -->
+
+$response->getBody()->write(str_replace('<!-- forum_debug -->', ForumFunction::get_debug($forum_start, $tpl_start), $template->output($result['data'])->body));
 //$response->getBody()->write($result);
 
 $emitter->emit($response);
