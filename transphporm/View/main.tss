@@ -8,15 +8,15 @@
 
 
 
-#navindex a {content: getVal(); format: translate ;}
+#navindex a {content: translate(null) ;}
 #navindex a:attr(href) {content: forum_link(data(url.index));}
 #navindex:attr(class):data[page="index"] {content: attr(class), " isactive"}
 
-#navuserlist a {content: getVal(); format: translate ;}
+#navuserlist a {content: translate(null) ;}
 #navuserlist a:attr(href) {content: forum_link(data(url.users));}
 #navuserlist:data[view_users!=true] {display: none;}
 
-#navrules a {content: getVal(); format: translate ;}
+#navrules a {content: translate(null) ;}
 #navindex a:attr(href) {content: forum_link(data(url.rules));}
 #navindex:data[view_rules!=true] {display: none;}
 
@@ -24,28 +24,37 @@
 #navsearch:data[user.g_read_board!=1] {display: none;}
 #navsearch:data[user.g_search!=1] {display: none;}
 #navsearch a:attr(href) {content: forum_link(data(url.search));}
-#navsearch a {content: getVal(); format: translate ;}
+#navsearch a {content: translate(null) ;}
 
 #navregister:data[user.is_guest!=true] {display: none;}
 #navregister a:attr(href) {content: forum_link(data(url.register));}
-#navregister a {content: getVal(); format: translate ;}
+#navregister a {content: translate(null) ;}
 
 #navlogin:data[user.is_guest!=true] {display: none;}
 #navlogin a:attr(href) {content: forum_link(data(url.login));}
-#navlogin a {content: getVal(); format: translate ;}
+#navlogin a {content: translate(null) ;}
 
 #navprofile:data[user.is_guest=true] {display: none;}
 #navprofile a:attr(href) {content: forum_link(data(url.user),data(user.id));}
-#navprofile a {content: getVal(); format: translate ;}
+#navprofile a {content: translate(null) ;}
 
 #navadmin:data[user.is_admmod!=true] {display: none;}
 #navadmin a:attr(href) {content: forum_link(data(url.admin_index));}
-#navadmin a {content: getVal(); format: translate ;}
+#navadmin a {content: translate(null) ;}
 
 #navlogout:data[user.is_guest=true] {display: none;}
 #navlogout a:attr(href) {content: forum_link(data(url.logout), data(user.id), csrf("logout", data(user.id)));}
-#navlogout a {content: getVal(); format: translate ;}
+#navlogout a {content: translate(null) ;}
 
 
+#brd-announcement:data[view_announce!=true] {display: none;}
+#brd-announcement h1 span:data[config.o_announcement_heading !=""] {content: data(config.o_announcement_heading) ;}
 
- 
+#brd-announcement .content {content: data(config.o_announcement_message); format: html;}
+
+#welcome_user:data[user.is_guest=true] {display: none;}
+#welcome_guest:data[user.is_guest!=true] {display: none;}
+
+#welcome_guest span {content: translate(null) ;}
+
+#welcome_user {content: translate(data(user.username));}

@@ -297,7 +297,7 @@ $result['data']['flash'] = $forum_flash->show();
 $result['data']['view_users'] = ($forum_user['g_read_board'] == '1' && $forum_user['g_view_users'] == '1');
 $result['data']['view_rules'] = ($forum_config['o_rules'] == '1' && (!$forum_user['is_guest'] || $forum_user['g_read_board'] == '1' || $forum_config['o_regs_allow'] == '1'));
 
-
+$result['data']['view_announce'] = ($forum_config['o_announcement'] == '1' && $forum_user['g_read_board'] == '1');
 
 //<!-- forum_debug -->
 

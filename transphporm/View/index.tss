@@ -11,8 +11,6 @@
 
 .cat-container  .info_posts strong {content: iteration(num_posts);}
 
-
-
 .cat-container .main-item .item-subject h3 a span {
 	content: iteration(forum_name);
 }
@@ -22,9 +20,8 @@
 }
 
 .cat-container .main-item .item-subject p:before {
-	content:iteration(forum_desc);
+	content:iteration(forum_desc); format: html;
 }
-
 
 .cat-container .modlist:data[iteration(moderators)=''] {display: none;}
 .cat-container .modlist .mod-item {repeat: data(iteration(moderators));}
@@ -32,6 +29,9 @@
 .cat-container .modlist .mod-item a {content: key() ;}
 .cat-container .modlist .mod-item a:attr(href) {content: forum_link(data(url.user), iteration());}
 
-.subject-title, .info-topics, .info-posts, .info-lastpost {content: getVal(); format: translate ;}
+.subject-title, .info-topics, .info-posts, .info-lastpost {content: translate(null) ;}
 
-#brd-stats .st-users span {content: "sdsds"}
+#cat-container-empty:data[forums] {display: none;}
+#cat-container-empty .main-head span, #cat-container-empty .main-message p, #brd-stats h2 span 
+{content: translate(null) ;}
+
