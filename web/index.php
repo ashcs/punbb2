@@ -188,7 +188,8 @@ $gateways = [
     'ModerateGateway',
     'DeleteGateway',
     'EditGateway',
-    'MiscGateway'
+    'MiscGateway',
+    'OnlineGateway'
 ];
 
 $c['user'] = $forum_user;
@@ -299,6 +300,7 @@ $result['data']['view_rules'] = ($forum_config['o_rules'] == '1' && (!$forum_use
 
 $result['data']['view_announce'] = ($forum_config['o_announcement'] == '1' && $forum_user['g_read_board'] == '1');
 
+$result['data']['view_search'] = ($forum_user['g_read_board'] == '1' && $forum_user['g_search'] == '1');
 //<!-- forum_debug -->
 
 $response->getBody()->write(str_replace('<!-- forum_debug -->', ForumFunction::get_debug($forum_start, $tpl_start), $template->output($result['data'])->body));

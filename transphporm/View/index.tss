@@ -11,9 +11,16 @@
 
 .cat-container  .info_posts strong {content: iteration(num_posts);}
 
-.cat-container .main-item .item-subject h3 a span {
-	content: iteration(forum_name);
-}
+.cat-container  .info_lastpost strong a {content: iteration(last_post); format: forum_time}
+.cat-container  .info_lastpost strong a:attr(href) {content: forum_link(data(url.post), iteration(last_post_id)); }
+
+.cat-container  .info_lastpost cite {content: translate(iteration(last_poster)) ;}
+
+.cat-container .info_lastpost.last_post:[iteration(last_post)=false] {display: none;}
+.cat-container .info_lastpost.never:[iteration(last_post) = true] {display: none;}
+
+
+.cat-container .main-item .item-subject h3 a span {	content: iteration(forum_name);}
 
 .cat-container .main-item .item-subject h3 a:attr(href) {
 	content: forum_link(data(url.forum), iteration(fid), friendly(iteration(forum_name)) );
@@ -23,6 +30,8 @@
 	content:iteration(forum_desc); format: html;
 }
 
+
+
 .cat-container .modlist:data[iteration(moderators)=''] {display: none;}
 .cat-container .modlist .mod-item {repeat: data(iteration(moderators));}
 
@@ -31,7 +40,23 @@
 
 .subject-title, .info-topics, .info-posts, .info-lastpost {content: translate(null) ;}
 
+
+
 #cat-container-empty:data[forums] {display: none;}
 #cat-container-empty .main-head span, #cat-container-empty .main-message p, #brd-stats h2 span 
 {content: translate(null) ;}
+
+#no_of_users span { content: translate(data(forum_stats.total_users)) ;}
+
+#newest_user a { content: data(forum_stats.last_user.username) ;}
+
+#newest_user span { content: translate(null) ;}
+
+#newest_user a::attr(href) {content: forum_link(data(url.user), data(forum_stats.last_user.id));}
+
+#no_of_topics span { content: translate(data(forum_stats.total_topics)) ;}
+
+#no_of_posts span { content: translate(data(forum_stats.total_posts)) ;}
+
+#brd-online h3 span {content: translate(data(online_info.summary)); format: html}
 

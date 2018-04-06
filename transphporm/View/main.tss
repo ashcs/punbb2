@@ -58,3 +58,12 @@
 #welcome_guest span {content: translate(null) ;}
 
 #welcome_user {content: translate(data(user.username));}
+
+#visit-links:data[view_search!=true] {display: none;}
+#visit-new:data[user.is_guest=true] {display: none;}
+
+#visit-new a:attr(href) {content: forum_link(data(url.search_new));}
+#visit-new a:attr(title) {content: translate(attr(title) ) ;}
+#visit-recent a:attr(href) {content: forum_link(data(url.search_recent));}
+#visit-unanswered a:attr(href) {content: forum_link(data(url.search_unanswered));}
+#visit-new a, #visit-recent a, #visit-unanswered a {content: translate(null) ;}

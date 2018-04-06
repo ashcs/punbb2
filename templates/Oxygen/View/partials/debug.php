@@ -25,11 +25,11 @@ if (defined('FORUM_DEBUG') || defined('FORUM_SHOW_QUERIES'))
         }
         
         echo '<p id="querytime" class="quiet">'.sprintf($lang_common['Querytime'],
-            \Punbb\ForumFunction::forum_number_format($time_diff, 3),
+            \Punbb\ForumFunction::forum_number_format($time_diff, 4),
             \Punbb\ForumFunction::forum_number_format(100 - $time_percent_db, 0),
             \Punbb\ForumFunction::forum_number_format($time_percent_db, 0),
             \Punbb\ForumFunction::forum_number_format($forum_db->get_num_queries())).'; template rendering: '.
-            \Punbb\ForumFunction::forum_number_format($forum_stop - $tpl_start, 3).'</p>'."\n";
+            \Punbb\ForumFunction::forum_number_format($forum_stop - $tpl_start, 4).'</p>'."\n";
     }
     
     if (defined('FORUM_SHOW_QUERIES'))

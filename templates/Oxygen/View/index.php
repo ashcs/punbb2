@@ -169,7 +169,7 @@ else
 <div id="brd-stats" class="gen-content">
 	<h2 class="hn"><span><?php echo $lang_index['Statistics'] ?></span></h2>
 	<ul>
-	<li class="st-users"><span><?= sprintf($lang_index['No of users'], '<strong>'.\Punbb\ForumFunction::forum_number_format($forum_stats['total_users']).'</strong>') ?></span></li>
+	<li class="st-users"><span><?= sprintf($lang_index['No of users'], '<strong>'.\Punbb\ForumFunction::forum_number_format($forum_stats['total_ users']).'</strong>') ?></span></li>
 	<li class="st-users"><span><?= sprintf($lang_index['Newest user'], '<strong>'.($forum_user['g_view_users'] == '1' ? '<a href="'.\Punbb\ForumFunction::forum_link($forum_url['user'], $forum_stats['last_user']['id']).'">'.\Punbb\ForumFunction::forum_htmlencode($forum_stats['last_user']['username']).'</a>' : \Punbb\ForumFunction::forum_htmlencode($forum_stats['last_user']['username'])).'</strong>') ?></span></li>
 	<li class="st-activity"><span><?= sprintf($lang_index['No of topics'], '<strong>'.\Punbb\ForumFunction::forum_number_format($forum_stats['total_topics']).'</strong>') ?></span></li>
 	<li class="st-activity"><span><?= sprintf($lang_index['No of posts'], '<strong>'.\Punbb\ForumFunction::forum_number_format($forum_stats['total_posts']).'</strong>') ?></span></li>

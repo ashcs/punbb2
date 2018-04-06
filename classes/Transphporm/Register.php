@@ -41,7 +41,7 @@ class Register implements \Transphporm\Module {
 		$functionSet->addFunction('csrf',  new \Punbb\Transphporm\TSSFunction\CsrfToken());
 		$functionSet->addFunction('friendly',  new \Punbb\Transphporm\TSSFunction\Friendly());
 		$functionSet->addFunction('debug',  new \Punbb\Transphporm\TSSFunction\Edebug());
-		//$config->registerFormatter($this->translator);
+		$config->registerFormatter(new \Punbb\Transphporm\Formatter\ForumTime());
 		
 	}
 }
