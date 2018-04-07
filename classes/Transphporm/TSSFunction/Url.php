@@ -5,14 +5,11 @@
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package PunBB
  */
-namespace Punbb;
-
-use Punbb\ForumFunction as F;
+namespace Punbb\Transphporm\TSSFunction;
 
 class Url implements \Transphporm\TSSFunction {
 
     public function run(array $args, \DomElement $element) {
-        //F::forum_link($link)
-        return  call_user_func_array(array('\Punbb\ForumFunction', 'forum_link'), $args);
+        return \Punbb\ForumFunction::forum_link($args[0], ((count($args) > 1) ? array_slice($args, 1) : null));
     }
 }
